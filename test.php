@@ -46,7 +46,10 @@ function test($name, $function)
         $type = get_class($e);
         $message = $e->getMessage();
         $stack = $e->getTraceAsString();
+
         echo "\n*** TEST FAILED ***\n\nEXCEPTION {$type} : {$message}\n{$stack}\n";
+
+        status(false);
     }
 }
 
@@ -61,6 +64,7 @@ function ok($result, $text, $value = null)
         echo "- PASS: $text\n";
     } else {
         echo "# FAIL: $text" . ($value === null ? '' : ' (' . var_export($value, true) . ')') . "\n";
+        status(false);
     }
 }
 
@@ -81,6 +85,20 @@ function check($value, $expected, $text = 'check')
         ))
         . ($check === false ? (" expected " . var_export($expected, true)) : '') . ")"
     );
+}
+
+/**
+ * @param bool|null $status test status
+ * @return int number of failures
+ */
+function status($status = null) {
+    static $failures = 0;
+
+    if ($status === false) {
+        $failures += 1;
+    }
+
+    return $failures;
 }
 
 /**
@@ -2015,7 +2033,7 @@ group(
 
         test(
             'add',
-            function ($parser) {
+            function () use ($parser) {
                 checkNum($parser->parse('1 + 2')->value, 3.0);
                 checkNum($parser->parse('2 + 1')->value, 3.0);
                 checkNum($parser->parse('1 + 2.3')->value, 3.3);
@@ -2269,3 +2287,5 @@ group(
         );
     }
 );
+
+exit(status());
