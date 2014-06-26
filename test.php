@@ -79,12 +79,24 @@ function check($value, $expected, $text = 'check')
 
     ok(
         $check,
-        "{$text} (got " . ($check && ! is_scalar($value) && ! is_null($value) ? (string)$value : var_export(
-            $value,
-            true
-        ))
-        . ($check === false ? (" expected " . var_export($expected, true)) : '') . ")"
+        "{$text} (got " . format($value, !$check)
+        . ($check === false ? (" expected " . format($expected)) : '') . ")"
     );
+}
+
+/**
+ * @param mixed $value
+ * @param bool $verbose
+ *
+ * @return string
+ */
+function format($value, $verbose = false)
+{
+    if (!$verbose && is_array($value)) {
+        return 'array[' . count($value) . ']';
+    }
+
+    return print_r($value, true);
 }
 
 /**
