@@ -1,0 +1,74 @@
+<?php
+
+namespace petitparser;
+
+/**
+ * Parser class for individual character classes.
+ */
+class CharacterParser extends Parser
+{
+    /**
+     * @var CharMatcher
+     */
+    private $_matcher;
+
+    /**
+     * @var string
+     */
+    private $_message;
+
+    /**
+     * @param CharMatcher $matcher
+     * @param string       $message
+     */
+    public function __construct(CharMatcher $matcher, $message)
+    {
+        $this->_matcher = $matcher;
+        $this->_message = $message;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function parseOn(Context $context)
+    {
+        $buffer = $context->buffer;
+        $position = $context->position;
+        $char = mb_substr($buffer, $position, 1);
+
+        if ($position < length($buffer) && $this->_matcher->match(strlen($char) === 1 ? ord($char) : $char)) {
+            return $context->success($char, $position + 1);
+        }
+
+        return $context->failure($this->_message);
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return parent::__toString() . "[{$this->_message}]";
+    }
+
+    /**
+     * @return Parser
+     */
+    public function copy()
+    {
+        return new CharacterParser($this->_matcher, $this->_message);
+    }
+
+    /**
+     * @param Parser   $other
+     *
+     * @return bool
+     */
+    public function equalProperties(Parser $other)
+    {
+        return parent::equalProperties($other)
+            && $other instanceof self
+            && $this->_matcher === $other->_matcher
+            && $this->_message === $other->_message;
+    }
+}
