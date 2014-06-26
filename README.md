@@ -3,6 +3,8 @@ PetitParserPHP
 
 Lukas Renggli's PetitParser ported to PHP by Rasmus Schultz.
 
+[![Build Status](https://travis-ci.org/mindplay-dk/petitparserphp.png)](https://travis-ci.org/mindplay-dk/petitparserphp)
+
 
 Status and scope of this port
 -----------------------------
