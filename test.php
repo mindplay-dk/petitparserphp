@@ -5,11 +5,11 @@ namespace petitparser;
 use Exception;
 use ErrorException;
 
-require './petitparser/_functions.php';
+require __DIR__ . DIRECTORY_SEPARATOR . __NAMESPACE__ . DIRECTORY_SEPARATOR . '_functions.php';
 
 spl_autoload_register(
     function ($name) {
-        include_once "./{$name}.php";
+        include_once __DIR__ . DIRECTORY_SEPARATOR . strtr($name, '\\', DIRECTORY_SEPARATOR) . '.php';
     }
 );
 
