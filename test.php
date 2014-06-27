@@ -2300,4 +2300,47 @@ group(
     }
 );
 
+group('php',
+    function () {
+        test(
+            'ISO string buffer',
+            function () {
+                $str = "\xC2\xA1Hola!"; // 7 bytes
+
+                $buffer = Buffer::fromISO($str);
+
+                check($buffer->string, $str);
+                check($buffer->length, 7);
+                check($buffer->encoding, 'ISO-8859-1');
+
+                check($buffer->charAt(0), "\xC2");
+                check($buffer->charAt(6), '!');
+
+                check($buffer->charCodeAt(0), 0xC2);
+                check($buffer->charCodeAt(6), ord('!'));
+            }
+        );
+
+        test(
+            'utf-8 string buffer',
+            function () {
+                $pi = "\xCF\x80"; // UTF-8 greek Pi http://www.fileformat.info/info/unicode/char/03c0/index.htm
+                $str = "\xC2\xA1Hola{$pi}"; // 8 bytes (6 characters in UTF-8)
+
+                $buffer = Buffer::fromUTF8($str);
+
+                check($buffer->string, $str);
+                check($buffer->length, 6); // 6 characters
+                check($buffer->encoding, 'UTF-8');
+
+                check($buffer->charAt(0), "\xC2\xA1"); // two-byte UTF-8 character
+                check($buffer->charAt(5), $pi);
+
+                check($buffer->charCodeAt(0), 0xA1); // UTF-32 encoding is one byte
+                check($buffer->charCodeAt(5), 0x03C0); // UTF-32 encoding of Pi is two bytes
+            }
+        );
+    }
+);
+
 exit(status());
