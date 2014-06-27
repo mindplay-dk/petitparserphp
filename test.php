@@ -2394,7 +2394,7 @@ group('php',
 
                 $percent = 100 * ($used / $maximum);
 
-                check($percent < 1, true, 'maximum memory usage of ' . number_format($percent, 2) .  '% of buffers');
+                check($percent < 5, true, 'maximum memory usage of ' . number_format($percent, 2) .  '% of buffers');
             }
         );
     }

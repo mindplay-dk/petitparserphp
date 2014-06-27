@@ -43,9 +43,9 @@ class Buffer extends Accessors
      * @param int $start buffer start in characters (inclusive)
      * @param int $end buffer end in characters (exclusive)
      */
-    protected function __construct(&$string, &$encoding, $start, $end)
+    protected function __construct($string, &$encoding, $start, $end)
     {
-        $this->_string = &$string;
+        $this->_string = $string;
         $this->_start = $start;
         $this->_end = $end;
         $this->_encoding = $encoding;
