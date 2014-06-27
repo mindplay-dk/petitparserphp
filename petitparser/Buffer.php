@@ -3,11 +3,13 @@
 namespace petitparser;
 
 /**
- * This class implements a string buffer.
+ * This class implements an immutable string buffer.
  *
  * Internally, the string is stored in UTF-32 encoding so that offsets
  * can accessed randomly without any substantial overhead - this comes
- * at the cost of memory overhead.
+ * at the cost of (4x) memory overhead, but internally, the string data
+ * is a reference, not a copy, which should make it more memory efficient
+ * overall, e.g. compared to a substrings taken from a string scalar.
  *
  * @property-read int $length number of characters in buffer
  * @property-read string $encoding source string character encoding

@@ -2371,6 +2371,32 @@ group('php',
                 check($buffer->slice(3,6)->slice(1,3)->charCodeAt(1), ord("6"));
             }
         );
+
+        test(
+            'memory',
+            function () {
+                $buffer = Buffer::fromISO(str_repeat('0123456789', 1024)); // 10KB per buffer
+
+                $baseline = memory_get_usage();
+
+                $num_buffers = 100;
+
+                $buffers = array();
+
+                for ($i=0; $i<$num_buffers; $i++) {
+                    $buffers[$i] = $buffer;
+                    $buffer = $buffer->slice(0);
+                }
+
+                $used = memory_get_usage() - $baseline;
+
+                $maximum = $buffer->length * 4 * $num_buffers; // 4 bytes per character
+
+                $percent = 100 * ($used / $maximum);
+
+                check($percent < 1, true, 'maximum memory usage of ' . number_format($percent, 2) .  '% of buffers');
+            }
+        );
     }
 );
 
