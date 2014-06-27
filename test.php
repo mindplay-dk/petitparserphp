@@ -2354,7 +2354,9 @@ group('php',
                 check($buffer->slice(3)->string, "45678");
 
                 check($buffer->slice(0,1)->string, "\xCF\x80");
+                check($buffer->slice(0,1)->length, 1);
                 check($buffer->slice(0,2)->string, "\xCF\x802");
+                check($buffer->slice(0,2)->length, 2);
                 check($buffer->slice(0,3)->string, "\xCF\x8023");
                 check($buffer->slice(0,8)->string, "\xCF\x802345678");
 
@@ -2363,6 +2365,7 @@ group('php',
                 check($buffer->slice(3,6)->slice(0)->string, "456");
                 check($buffer->slice(3,6)->slice(1,2)->string, "5");
                 check($buffer->slice(3,6)->slice(1,3)->string, "56");
+                check($buffer->slice(3,6)->slice(1,4)->slice(0,3)->length, 3);
                 check($buffer->slice(3,6)->slice(1,4)->slice(0,3)->string, "567");
 
                 check($buffer->slice(3,6)->slice(1,3)->charAt(0), "5");
