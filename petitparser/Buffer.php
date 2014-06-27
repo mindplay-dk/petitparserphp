@@ -26,19 +26,45 @@ class Buffer extends Accessors
     protected $_encoding;
 
     /**
-     * @var int buffer length in characters (not in bytes)
+     * @var int buffer start in characters (not in bytes; inclusive)
      */
-    protected $_length;
+    protected $_start;
 
     /**
-     * @param string $string
-     * @param string $encoding source character encoding
+     * @var int buffer end in characters (not in bytes; exclusive)
      */
-    protected function __construct($string, $encoding)
+    protected $_end;
+
+    /**
+     * @param string &$string reference to UTF-32 encoded string
+     * @param string ^$encoding source character encoding
+     * @param int $start buffer start in characters (inclusive)
+     * @param int $end buffer end in characters (exclusive)
+     */
+    protected function __construct(&$string, &$encoding, $start, $end)
     {
-        $this->_string = mb_convert_encoding($string, 'UTF-32', $encoding);
-        $this->_length = (int) (mb_strlen($this->_string, '8bit') / 4);
+        $this->_string = &$string;
+        $this->_start = $start;
+        $this->_end = $end;
         $this->_encoding = $encoding;
+    }
+
+    /**
+     * @param string $string source string in the specified encoding
+     * @param string $encoding source character encoding
+     *
+     * @return Buffer
+     */
+    protected static function create($string, $encoding)
+    {
+        $string = mb_convert_encoding($string, 'UTF-32', $encoding);
+
+        return new Buffer(
+            $string,
+            $encoding,
+            0,
+            (int) (mb_strlen($string, '8bit') / 4)
+        );
     }
 
     /**
@@ -48,7 +74,7 @@ class Buffer extends Accessors
      */
     public static function fromISO($string)
     {
-        return new Buffer($string, 'ISO-8859-1');
+        return self::create($string, 'ISO-8859-1');
     }
 
     /**
@@ -58,7 +84,7 @@ class Buffer extends Accessors
      */
     public static function fromUTF8($string)
     {
-        return new Buffer($string, 'UTF-8');
+        return self::create($string, 'UTF-8');
     }
 
     /**
@@ -69,7 +95,7 @@ class Buffer extends Accessors
     public function charAt($offset)
     {
         return mb_convert_encoding(
-            mb_substr($this->_string, 4 * $offset, 4, '8bit'),
+            mb_substr($this->_string, 4 * ($offset + $this->_start), 4, '8bit'),
             $this->_encoding,
             'UTF-32'
         );
@@ -82,7 +108,7 @@ class Buffer extends Accessors
      */
     public function charCodeAt($offset)
     {
-        $bytes = mb_substr($this->_string, 4 * $offset, 4, '8bit');
+        $bytes = mb_substr($this->_string, 4 * ($offset + $this->_start), 4, '8bit');
 
         // http://dk1.php.net/manual/en/function.unpack.php#106041
 
@@ -96,12 +122,30 @@ class Buffer extends Accessors
     }
 
     /**
+     * @param int $start start in characters (inclusive)
+     * @param int $end end in characters (exclusive)
+     *
+     * @return Buffer
+     */
+    public function slice($start, $end = null)
+    {
+        return new Buffer(
+            $this->_string,
+            $this->_encoding,
+            $this->_start + $start,
+            $end === null
+                ? $this->_end
+                : $this->_start + $end
+        );
+    }
+
+    /**
      * @see $length
      * @ignore
      */
     protected function get_length()
     {
-        return $this->_length;
+        return $this->_end - $this->_start;
     }
 
     /**
@@ -119,6 +163,10 @@ class Buffer extends Accessors
      */
     protected function get_string()
     {
-        return mb_convert_encoding($this->_string, $this->_encoding, 'UTF-32');
+        return mb_convert_encoding(
+            mb_substr($this->_string, 4 * $this->_start, 4 * $this->get_length(), '8bit'),
+            $this->_encoding,
+            'UTF-32'
+        );
     }
 }

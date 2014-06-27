@@ -2340,6 +2340,37 @@ group('php',
                 check($buffer->charCodeAt(5), 0x03C0); // UTF-32 encoding of Pi is two bytes
             }
         );
+
+        test(
+            'buffer slices',
+            function () {
+                $str = "\xCF\x802345678";
+
+                $buffer = Buffer::fromUTF8($str);
+
+                check($buffer->slice(0)->string, $str);
+                check($buffer->slice(1)->string, "2345678");
+                check($buffer->slice(2)->string, "345678");
+                check($buffer->slice(3)->string, "45678");
+
+                check($buffer->slice(0,1)->string, "\xCF\x80");
+                check($buffer->slice(0,2)->string, "\xCF\x802");
+                check($buffer->slice(0,3)->string, "\xCF\x8023");
+                check($buffer->slice(0,8)->string, "\xCF\x802345678");
+
+                check($buffer->slice(3,6)->string, "456");
+                check($buffer->slice(3,6)->slice(1)->string, "56");
+                check($buffer->slice(3,6)->slice(0)->string, "456");
+                check($buffer->slice(3,6)->slice(1,2)->string, "5");
+                check($buffer->slice(3,6)->slice(1,3)->string, "56");
+                check($buffer->slice(3,6)->slice(1,4)->slice(0,3)->string, "567");
+
+                check($buffer->slice(3,6)->slice(1,3)->charAt(0), "5");
+                check($buffer->slice(3,6)->slice(1,3)->charCodeAt(0), ord("5"));
+                check($buffer->slice(3,6)->slice(1,3)->charAt(1), "6");
+                check($buffer->slice(3,6)->slice(1,3)->charCodeAt(1), ord("6"));
+            }
+        );
     }
 );
 
