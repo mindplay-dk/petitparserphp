@@ -37,7 +37,7 @@ class Buffer extends Accessors
     protected function __construct($string, $encoding)
     {
         $this->_string = mb_convert_encoding($string, 'UTF-32', $encoding);
-        $this->_length = (int) mb_strlen($this->_string, '8bit') / 4;
+        $this->_length = (int) (mb_strlen($this->_string, '8bit') / 4);
         $this->_encoding = $encoding;
     }
 
