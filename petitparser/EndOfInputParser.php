@@ -32,7 +32,7 @@ class EndOfInputParser extends DelegateParser
     {
         $result = $this->_delegate->parseOn($context);
 
-        if ($result->isFailure || $result->position == length($result->buffer)) {
+        if ($result->isFailure || $result->position == $result->buffer->length) {
             return $result;
         }
 

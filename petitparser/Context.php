@@ -5,7 +5,7 @@ namespace petitparser;
 /**
  * An immutable parse context.
  *
- * @property-read mixed $buffer The buffer we are working on.
+ * @property-read Buffer $buffer The buffer we are working on.
  * @property-read int $position The current position in the buffer.
  * @property-read bool $isSuccess Returns [true] if this result indicates a parse success.
  * @property-read bool $isFailure Returns [true] if this result indicates a parse failure.
@@ -13,7 +13,7 @@ namespace petitparser;
 class Context extends Accessors
 {
     /**
-     * @var mixed
+     * @var Buffer
      */
     private $_buffer;
 
@@ -23,10 +23,10 @@ class Context extends Accessors
     private $_position;
 
     /**
-     * @param mixed $buffer
+     * @param Buffer $buffer
      * @param int $position
      */
-    public function __construct($buffer, $position)
+    public function __construct(Buffer $buffer, $position)
     {
         $this->_buffer = $buffer;
         $this->_position = $position;

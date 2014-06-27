@@ -27,8 +27,8 @@ class AnyParser extends Parser
         $position = $context->position;
         $buffer = $context->buffer;
 
-        return $position < length($buffer)
-            ? $context->success($buffer[$position], $position + 1)
+        return $position < $buffer->length
+            ? $context->success($buffer->charAt($position), $position + 1)
             : $context->failure($this->_message);
     }
 

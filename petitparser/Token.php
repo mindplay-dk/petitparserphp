@@ -8,7 +8,7 @@ namespace petitparser;
  * in the input buffer.
  *
  * @property-read mixed $value Returns the parsed value.
- * @property-read mixed $buffer Returns the input buffer.
+ * @property-read Buffer $buffer Returns the input buffer.
  * @property-read int $start Returns the start position in the input buffer.
  * @property-read int $stop Returns the stop position in the input buffer.
  * @property-read int $length Returns the length of the token.
@@ -24,7 +24,7 @@ class Token extends Accessors implements Comparable
     private $_value;
 
     /**
-     * @var string
+     * @var Buffer
      */
     private $_buffer;
 
@@ -40,11 +40,11 @@ class Token extends Accessors implements Comparable
 
     /**
      * @param mixed $value
-     * @param string $buffer
+     * @param Buffer $buffer
      * @param int $start
      * @param int $stop
      */
-    public function __construct($value, $buffer, $start, $stop)
+    public function __construct($value, Buffer $buffer, $start, $stop)
     {
         $this->_value = $value;
         $this->_buffer = $buffer;
@@ -67,11 +67,11 @@ class Token extends Accessors implements Comparable
     }
 
     /**
-     * @param mixed $buffer
+     * @param Buffer $buffer
      * @param int $position
      * @return array [int $line, int $column]
      */
-    public static function lineAndColumnOf($buffer, $position)
+    public static function lineAndColumnOf(Buffer $buffer, $position)
     {
         $line = 1;
         $offset = 0;
@@ -176,9 +176,7 @@ class Token extends Accessors implements Comparable
      */
     protected function get_input()
     {
-        return is_string($this->buffer)
-            ? mb_substr($this->buffer, $this->start, $this->stop - $this->start)
-            : array_slice($this->buffer, $this->start, $this->stop - $this->start);
+        return $this->buffer->slice($this->start, $this->stop)->string;
     }
 
     /**
@@ -190,18 +188,15 @@ class Token extends Accessors implements Comparable
     }
 
     /**
-     * @param mixed $buffer
+     * @param Buffer $buffer
      * @param int $position
      *
      * @return string
      */
-    public static function positionString($buffer, $position)
+    public static function positionString(Buffer $buffer, $position)
     {
-        if (is_string($buffer)) {
-            $lineAndColumn = Token::lineAndColumnOf($buffer, $position);
-            return "{$lineAndColumn[0]}:{$lineAndColumn[1]}";
-        } else {
-            return "{$position}";
-        }
+        $lineAndColumn = Token::lineAndColumnOf($buffer, $position);
+
+        return "{$lineAndColumn[0]}:{$lineAndColumn[1]}";
     }
 }

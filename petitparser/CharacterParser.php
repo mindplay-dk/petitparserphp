@@ -34,9 +34,9 @@ class CharacterParser extends Parser
     {
         $buffer = $context->buffer;
         $position = $context->position;
-        $char = mb_substr($buffer, $position, 1);
+        $char = $buffer->charAt($position);
 
-        if ($position < length($buffer) && $this->_matcher->match(strlen($char) === 1 ? ord($char) : $char)) {
+        if ($position < $buffer->length && $this->_matcher->match($buffer->charCodeAt($position))) {
             return $context->success($char, $position + 1);
         }
 

@@ -18,11 +18,9 @@ class FlattenParser extends DelegateParser
         $result = $this->_delegate->parseOn($context);
 
         if ($result->isSuccess) {
-            $output = is_string($context->buffer)
-                ? mb_substr($context->buffer, $context->position, $result->position - $context->position)
-                : array_slice($context->buffer, $context->position, $result->position - $context->position);
+            $output = $context->buffer->slice($context->position, $result->position);
 
-            return $result->success($output);
+            return $result->success($output->string);
         } else {
             return $result;
         }

@@ -13,11 +13,11 @@ class Success extends Result
     private $_value;
 
     /**
-     * @param mixed $buffer
+     * @param Buffer $buffer
      * @param int $position
      * @param mixed $value
      */
-    public function __construct($buffer, $position, $value)
+    public function __construct(Buffer $buffer, $position, $value)
     {
         $this->_value = $value;
 

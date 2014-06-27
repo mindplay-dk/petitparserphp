@@ -45,9 +45,7 @@ class PredicateParser extends Parser
         $stop = $start + $this->_length;
 
         if ($stop <= length($context->buffer)) {
-            $result = is_string($context->buffer)
-                ? mb_substr($context->buffer, $start, $stop - $start)
-                : array_slice($context->buffer, $start, $stop - $start);
+            $result = $context->buffer->slice($start, $stop)->string;
 
             if (call_user_func($this->_predicate, $result)) {
                 return $context->success($result, $stop);

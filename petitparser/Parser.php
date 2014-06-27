@@ -29,7 +29,7 @@ abstract class Parser extends Accessors
     abstract public function parseOn(Context $context);
 
     /**
-     * Returns the parse result of the [input].
+     * Returns the parse result of the [input] buffer.
      *
      * The implementation creates a default parse context on the input and calls
      * the internal parsing logic of the receiving parser.
@@ -42,13 +42,37 @@ abstract class Parser extends Accessors
      * [Failure], where [Result.position] is [:0:] and [Failure.message] is
      * ['letter expected'].
      *
-     * @param mixed $input
+     * @param Buffer|string $input
      *
      * @return Result
      */
     public function parse($input)
     {
-        return $this->parseOn(new Context($input, 0));
+        return $this->parseOn(new Context(is_string($input) ? Buffer::fromUTF8($input) : $input, 0));
+    }
+
+    /**
+     * @see parse()
+     *
+     * @param string $string UTF-8 encoded string to parse
+     *
+     * @return Result
+     */
+    public function parseUTF8($string)
+    {
+        return $this->parse(Buffer::fromUTF8($string));
+    }
+
+    /**
+     * @see parse()
+     *
+     * @param string $string ISO-8859-1 encoded string to parse
+     *
+     * @return Result
+     */
+    public function parseISO($string)
+    {
+        return $this->parse(Buffer::fromISO($string));
     }
 
     /**
@@ -57,11 +81,11 @@ abstract class Parser extends Accessors
      * For example, [:letter().plus().accept('abc'):] returns [:true:], and
      * [:letter().plus().accept('123'):] returns [:false:].
      *
-     * @param mixed $input
+     * @param Buffer $input
      *
      * @return bool
      */
-    public function accept($input)
+    public function accept(Buffer $input)
     {
         return $this->parse($input)->isSuccess;
     }
@@ -73,11 +97,11 @@ abstract class Parser extends Accessors
      * [:[['a', 'b', 'c'], ['b', 'c'], ['c'], ['d', 'e'], ['e']]:]. See
      * [Parser.matchesSkipping] to retrieve non-overlapping parse results.
      *
-     * @param mixed $input
+     * @param Buffer $input
      *
      * @return Result[]
      */
-    public function matches($input)
+    public function matches(Buffer $input)
     {
         $list = array();
 
@@ -102,11 +126,11 @@ abstract class Parser extends Accessors
      * list [:[['a', 'b', 'c'], ['d', 'e']]:]. See [Parser.matches] to retrieve
      * overlapping parse results.
      *
-     * @param mixed $input
+     * @param Buffer $input
      *
      * @return Result[]
      */
-    public function matchesSkipping($input)
+    public function matchesSkipping(Buffer $input)
     {
         $list = array();
 

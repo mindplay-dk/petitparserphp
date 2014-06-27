@@ -11,10 +11,10 @@ namespace petitparser;
 abstract class Result extends Context
 {
     /**
-     * @param mixed $buffer
+     * @param Buffer $buffer
      * @param int   $position
      */
-    public function __construct($buffer, $position)
+    public function __construct(Buffer $buffer, $position)
     {
         parent::__construct($buffer, $position);
     }

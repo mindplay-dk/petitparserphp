@@ -160,7 +160,7 @@ function throws($exception, $when, $function)
  */
 function expectSuccess(Parser $parser, $input, $expected, $position = null)
 {
-    $result = $parser->parse($input);
+    $result = $parser->parse(Buffer::fromUTF8($input));
 
     check($result->isSuccess, true, 'is success');
     check($result->isFailure, false, 'is not failure');
@@ -181,7 +181,7 @@ function expectSuccess(Parser $parser, $input, $expected, $position = null)
  */
 function expectFailure(Parser $parser, $input, $position = 0, $message = null)
 {
-    $result = $parser->parse($input);
+    $result = $parser->parse(Buffer::fromUTF8($input));
 
     check($result->isFailure, true, "is failure");
     check($result->isSuccess, false, "is not success");
@@ -312,7 +312,7 @@ group(
                 /** @var Token $token */
                 $token = $parser->parse('123')->value;
                 check($token->value, array('1', '2', '3'));
-                check($token->buffer, '123');
+                check($token->buffer->string, '123');
                 check($token->start, 0);
                 check($token->stop, 3);
                 check($token->input, '123');
@@ -1044,7 +1044,7 @@ group(
                 check(
                     array_map(
                         function ($token) {
-                            return $token->buffer;
+                            return $token->buffer->string;
                         },
                         $result
                     ),
@@ -1176,8 +1176,8 @@ group(
             'accept()',
             function () {
                 $parser = char('a');
-                check($parser->accept('a'), true);
-                check($parser->accept('b'), false);
+                check($parser->accept(Buffer::fromUTF8('a')), true);
+                check($parser->accept(Buffer::fromUTF8('b')), false);
             }
         );
 
@@ -1185,7 +1185,7 @@ group(
             'matches()',
             function () {
                 $parser = digit()->seq(digit())->flatten();
-                check($parser->matches('a123b45'), array('12', '23', '45'));
+                check($parser->matches(Buffer::fromUTF8('a123b45')), array('12', '23', '45'));
             }
         );
 
@@ -1193,7 +1193,7 @@ group(
             'matchesSkipping()',
             function () {
                 $parser = digit()->seq(digit())->flatten();
-                check($parser->matchesSkipping('a123b45'), array('12', '45'));
+                check($parser->matchesSkipping(Buffer::fromUTF8('a123b45')), array('12', '45'));
             }
         );
     }
@@ -1642,10 +1642,10 @@ group(
                     $self->def('start', $self->ref('loop')->or_(char('b')));
                     $self->def('loop', char('a')->seq($self->ref('start')));
                 });
-                check($parser->accept('b'), true);
-                check($parser->accept('ab'), true);
-                check($parser->accept('aab'), true);
-                check($parser->accept('aaab'), true);
+                check($parser->accept(Buffer::fromUTF8('b')), true);
+                check($parser->accept(Buffer::fromUTF8('ab')), true);
+                check($parser->accept(Buffer::fromUTF8('aab')), true);
+                check($parser->accept(Buffer::fromUTF8('aaab')), true);
             }
         );
 
@@ -1830,15 +1830,15 @@ group(
                             ->seq(char(')')->trim())
                     );
                 });
-                check($parser->accept('x'), true);
-                check($parser->accept('xy'), true);
-                check($parser->accept('x12'), true);
-                check($parser->accept("\\x.y"), true);
-                check($parser->accept("\\x.\\y.z"), true);
-                check($parser->accept('(x x)'), true);
-                check($parser->accept('(x y)'), true);
-                check($parser->accept('(x (y z))'), true);
-                check($parser->accept('((x y) z)'), true);
+                check($parser->accept(Buffer::fromUTF8('x')), true);
+                check($parser->accept(Buffer::fromUTF8('xy')), true);
+                check($parser->accept(Buffer::fromUTF8('x12')), true);
+                check($parser->accept(Buffer::fromUTF8("\\x.y")), true);
+                check($parser->accept(Buffer::fromUTF8("\\x.\\y.z")), true);
+                check($parser->accept(Buffer::fromUTF8('(x x)')), true);
+                check($parser->accept(Buffer::fromUTF8('(x y)')), true);
+                check($parser->accept(Buffer::fromUTF8('(x (y z))')), true);
+                check($parser->accept(Buffer::fromUTF8('((x y) z)')), true);
             }
         );
 
@@ -1891,22 +1891,22 @@ group(
                             ->seq(char(')')->trim())
                     );
                 });
-                check($parser->accept('1'), true);
-                check($parser->accept('12'), true);
-                check($parser->accept('1.23'), true);
-                check($parser->accept('-12.3'), true);
-                check($parser->accept('1 + 2'), true);
-                check($parser->accept('1 + 2 + 3'), true);
-                check($parser->accept('1 - 2'), true);
-                check($parser->accept('1 - 2 - 3'), true);
-                check($parser->accept('1 * 2'), true);
-                check($parser->accept('1 * 2 * 3'), true);
-                check($parser->accept('1 / 2'), true);
-                check($parser->accept('1 / 2 / 3'), true);
-                check($parser->accept('1 ^ 2'), true);
-                check($parser->accept('1 ^ 2 ^ 3'), true);
-                check($parser->accept('1 + (2 * 3)'), true);
-                check($parser->accept('(1 + 2) * 3'), true);
+                check($parser->accept(Buffer::fromISO('1')), true);
+                check($parser->accept(Buffer::fromISO('12')), true);
+                check($parser->accept(Buffer::fromISO('1.23')), true);
+                check($parser->accept(Buffer::fromISO('-12.3')), true);
+                check($parser->accept(Buffer::fromISO('1 + 2')), true);
+                check($parser->accept(Buffer::fromISO('1 + 2 + 3')), true);
+                check($parser->accept(Buffer::fromISO('1 - 2')), true);
+                check($parser->accept(Buffer::fromISO('1 - 2 - 3')), true);
+                check($parser->accept(Buffer::fromISO('1 * 2')), true);
+                check($parser->accept(Buffer::fromISO('1 * 2 * 3')), true);
+                check($parser->accept(Buffer::fromISO('1 / 2')), true);
+                check($parser->accept(Buffer::fromISO('1 / 2 / 3')), true);
+                check($parser->accept(Buffer::fromISO('1 ^ 2')), true);
+                check($parser->accept(Buffer::fromISO('1 ^ 2 ^ 3')), true);
+                check($parser->accept(Buffer::fromISO('1 + (2 * 3)')), true);
+                check($parser->accept(Buffer::fromISO('(1 + 2) * 3')), true);
             }
         );
     }
@@ -2219,8 +2219,8 @@ group(
 
                 check($id3->message, 'letter expected');
                 check($id3->position, 0);
-                check($id->accept('foo'), true);
-                check($id->accept('123'), false);
+                check($id->accept(Buffer::fromISO('foo')), true);
+                check($id->accept(Buffer::fromISO('123')), false);
             }
         );
 
@@ -2228,7 +2228,7 @@ group(
             'different parsers',
             function () {
                 $id = letter()->seq(word()->star())->flatten();
-                $matches = $id->matchesSkipping('foo 123 bar4');
+                $matches = $id->matchesSkipping(Buffer::fromISO('foo 123 bar4'));
 
                 check($matches, array('foo', 'bar4'));
             }

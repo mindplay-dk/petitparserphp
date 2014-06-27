@@ -13,11 +13,11 @@ class Failure extends Result
     private $_message;
 
     /**
-     * @param mixed $buffer
+     * @param Buffer $buffer
      * @param int $position
      * @param string $message
      */
-    public function __construct($buffer, $position, $message)
+    public function __construct(Buffer $buffer, $position, $message)
     {
         parent::__construct($buffer, $position);
         $this->_message = $message;
