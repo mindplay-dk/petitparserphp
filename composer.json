@@ -1,7 +1,7 @@
 {
     "name": "mindplay/petitparserphp",
     "type": "library",
-    "description": "Type-hinted event facility for PHP",
+    "description": "Lukas Renggli's PetitParser ported to PHP",
     "license": "LGPL-3.0+",
     "authors": [
         {
