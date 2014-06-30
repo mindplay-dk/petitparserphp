@@ -18,7 +18,7 @@ class NotCharMatcher extends CharMatcher
     }
 
     /**
-     * @param int|string $value
+     * @param int $value
      *
      * @return bool
      */

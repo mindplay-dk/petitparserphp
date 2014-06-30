@@ -8,7 +8,7 @@ namespace petitparser;
 abstract class CharMatcher
 {
     /**
-     * @param int $value
+     * @param int $value 32-bit Unicode character code
      *
      * @return bool
      */

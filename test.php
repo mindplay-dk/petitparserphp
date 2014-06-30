@@ -160,14 +160,16 @@ function throws($exception, $when, $function)
  */
 function expectSuccess(Parser $parser, $input, $expected, $position = null)
 {
-    $result = $parser->parse(Buffer::fromUTF8($input));
+    $buffer = Buffer::fromUTF8($input);
+
+    $result = $parser->parse($buffer);
 
     check($result->isSuccess, true, 'is success');
     check($result->isFailure, false, 'is not failure');
     check($result->value, $expected);
 
     if ($position === null) {
-        $position = length($input);
+        $position = $buffer->length;
     }
 
     check($result->position, $position, "position is $position");
@@ -181,7 +183,9 @@ function expectSuccess(Parser $parser, $input, $expected, $position = null)
  */
 function expectFailure(Parser $parser, $input, $position = 0, $message = null)
 {
-    $result = $parser->parse(Buffer::fromUTF8($input));
+    $buffer = Buffer::fromUTF8($input);
+
+    $result = $parser->parse($buffer);
 
     check($result->isFailure, true, "is failure");
     check($result->isSuccess, false, "is not success");

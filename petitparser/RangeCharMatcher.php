@@ -5,12 +5,12 @@ namespace petitparser;
 class RangeCharMatcher extends CharMatcher
 {
     /**
-     * @var int|string
+     * @var int
      */
     protected $_start;
 
     /**
-     * @var int|string
+     * @var int
      */
     protected $_stop;
 
@@ -20,22 +20,18 @@ class RangeCharMatcher extends CharMatcher
      */
     public function __construct($start, $stop)
     {
-        $this->_start = strlen($start) === 1 ? ord($start) : $start;
-        $this->_stop = strlen($stop) === 1 ? ord($stop) : $stop;
+        $this->_start = toCharCode($start);
+        $this->_stop = toCharCode($stop);
     }
 
     /**
-     * @param int|string $value
+     * @param int $value
      *
      * @return bool
      */
     public function match($value)
     {
-        if (is_int($value)) {
-            return $value >= $this->_start
-                && $value <= $this->_stop;
-        } else {
-            return false; // TODO implement this
-        }
+        return $value >= $this->_start
+            && $value <= $this->_stop;
     }
 }

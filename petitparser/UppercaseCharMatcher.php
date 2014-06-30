@@ -5,12 +5,12 @@ namespace petitparser;
 class UppercaseCharMatcher extends CharMatcher
 {
     /**
-     * @param int|string $value
+     * @param int $value
      *
      * @return bool
      */
     public function match($value)
     {
-        return is_int($value) && $value >= 65 && $value <= 90;
+        return $value >= 65 && $value <= 90;
     }
 }

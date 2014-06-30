@@ -2,6 +2,7 @@
 
 namespace petitparser;
 
+use InvalidArgumentException;
 use RuntimeException;
 
 /**
@@ -13,7 +14,7 @@ use RuntimeException;
 function length($value)
 {
     if (is_string($value)) {
-        return mb_strlen($value);
+        return mb_strlen($value); // TODO QA
     }
 
     if (is_array($value)) {
@@ -30,36 +31,37 @@ function length($value)
 /**
  * Internal method to convert an element to a character code.
  *
- * @param mixed $element
+ * @param int|string $element single character encoded as UTF-8; or a 32-bit Unicode character code
  *
- * @return int
+ * @return int 32-bit Unicode character code
  *
- * TODO leaving this out for now
+ * @throws InvalidArgumentException
  */
-//function _toCharCode($element)
-//{
-//    if (is_int($element)) {
-//        return $element;
-//    }
-//    if (is_string($element)) {
-//        if (mb_strlen($element) !== 1) {
-//            throw new InvalidArgumentException("{$element} is not a character");
-//        }
-//    }
-//  if (element is num) {
-//    return element.round();
-//  }
-//  var value = element.toString();
-//  if (value.length != 1) {
-//    throw new ArgumentError('$value is not a character');
-//  }
-//  return value.codeUnitAt(0);
-//}
+function toCharCode($element)
+{
+    if (is_int($element)) {
+        return $element;
+    }
+
+    if (is_string($element)) {
+        $element = mb_convert_encoding($element, 'UTF-32', 'UTF-8'); // TODO QA
+
+        if (PHP_INT_SIZE <= 4) {
+            list(, $h, $l) = unpack('n*', $element);
+            return ($l + ($h * 0x010000));
+        } else {
+            list(, $int) = unpack('N', $element);
+            return $int;
+        }
+    }
+
+    throw new InvalidArgumentException("'$element' is not a character");
+}
 
 /**
  * Returns a parser that accepts a specific character only.
  *
- * @param mixed  $element
+ * @param int|string $element
  * @param string $message
  *
  * @return Parser
@@ -345,7 +347,7 @@ function anyIn($elements, $message = null)
 function string($element, $message = null)
 {
     return predicate(
-        mb_strlen($element),
+        mb_strlen($element), // TODO QA
         function ($each) use ($element) {
             return $element === $each;
         },
