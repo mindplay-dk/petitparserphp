@@ -26,6 +26,6 @@ class SingleCharMatcher extends CharMatcher
      */
     public function match($value)
     {
-        return $this->_value == $value;
+        return $this->_value === $value;
     }
 }
