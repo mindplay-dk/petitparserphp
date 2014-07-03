@@ -4,17 +4,24 @@ namespace petitparser;
 
 use Exception;
 use ErrorException;
+use Composer\Autoload\ClassLoader;
+use PHP_CodeCoverage;
+use PHP_CodeCoverage_Report_Clover;
+use PHP_CodeCoverage_Report_Text;
+
+/** @var ClassLoader $loader */
+$loader = require __DIR__ . '/vendor/autoload.php';
+$loader->add(__NAMESPACE__, __DIR__);
 
 require __DIR__ . DIRECTORY_SEPARATOR . __NAMESPACE__ . DIRECTORY_SEPARATOR . '_functions.php';
 
-spl_autoload_register(
-    function ($name) {
-        include_once __DIR__ . DIRECTORY_SEPARATOR . strtr($name, '\\', DIRECTORY_SEPARATOR) . '.php';
-    }
-);
-
 set_error_handler(
     function ($errno, $errstr, $errfile, $errline) {
+        if ($errno === E_NOTICE && strpos($errstr, 'fb_enable_code_coverage') !== false) {
+            echo "# NOTICE: $errstr\n";
+            return; // TODO QA: suppress strict error-handling for notice under HHVM with code-coverage
+        }
+
         throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
     }
 );
@@ -22,14 +29,22 @@ set_error_handler(
 @ini_set('xdebug.max_nesting_level', '1000');
 
 /**
- * @param string   $name
- * @param callable $fn
+ * @param string|null   $name
+ * @param callable|null $fn
+ * @return string
  */
-function group($name, $fn)
+function group($name = null, $fn = null)
 {
+    static $current;
+
     echo "=== GROUP: $name ===\n\n";
 
-    call_user_func($fn);
+    if ($name !== null) {
+        $current = $name;
+        call_user_func($fn);
+    }
+
+    return $current;
 }
 
 /**
@@ -41,7 +56,9 @@ function test($name, $function)
     echo "\n--- TEST: $name\n\n";
 
     try {
+        coverage('[' . group() . '] ' . $name);
         call_user_func($function);
+        coverage();
     } catch (Exception $e) {
         $type = get_class($e);
         $message = $e->getMessage();
@@ -196,9 +213,49 @@ function expectFailure(Parser $parser, $input, $position = 0, $message = null)
     }
 }
 
+/**
+ * @param string|null $text description (to start coverage); or null (to stop coverage)
+ * @return PHP_CodeCoverage|null
+ */
+function coverage($text = null)
+{
+    static $coverage = null;
+    static $running = false;
+
+    if ($coverage === false) {
+        return null; // code coverage unavailable
+    }
+
+    if ($coverage === null) {
+        try {
+            $coverage = new PHP_CodeCoverage;
+        } catch (PHP_CodeCoverage_Exception $e) {
+            echo "# Notice: no code coverage run-time available\n";
+            $coverage = false;
+            return null;
+        }
+    }
+
+    if (is_string($text)) {
+        $coverage->start($text);
+        $running = true;
+    } else {
+        if ($running) {
+            $coverage->stop();
+            $running = false;
+        }
+    }
+
+    return $coverage;
+}
+
 // TEST:
 
 header('Content-type: text/plain');
+
+if (coverage()) {
+    coverage()->filter()->addDirectoryToWhitelist(__DIR__ . '/petitparser');
+}
 
 class PluggableCompositeParser extends CompositeParser
 {
@@ -2406,5 +2463,15 @@ group('php',
         );
     }
 );
+
+if (coverage()) {
+    $report = new PHP_CodeCoverage_Report_Text(10, 90, false, false);
+
+    echo $report->process(coverage(), false);
+
+    $report = new PHP_CodeCoverage_Report_Clover();
+
+    $report->process(coverage(), 'build/logs/clover.xml');
+}
 
 exit(status());

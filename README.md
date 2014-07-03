@@ -5,15 +5,21 @@ Lukas Renggli's PetitParser ported to PHP by Rasmus Schultz.
 
 [![Build Status](https://travis-ci.org/mindplay-dk/petitparserphp.png)](https://travis-ci.org/mindplay-dk/petitparserphp)
 
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/mindplay-dk/petitparserphp/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/mindplay-dk/petitparserphp/?branch=master)
+
+[![Code Coverage](https://scrutinizer-ci.com/g/mindplay-dk/petitparserphp/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/mindplay-dk/petitparserphp/?branch=master)
+
 
 Status and scope of this port
 -----------------------------
+
+- API (method-names, etc.) is *unstable and subject to change* pending the first tagged release.
 
 - Most of the core and all core unit tests have been ported and are passing.
 
 - Fully type-hinted with php-doc, passing all inspections in PhpStorm.
 
-- Actual grammars and parsers (XML, Dart, Lisp, etc.) have not been ported.
+- Actual grammars and parsers (XML, Dart, Lisp, etc.) have not been ported, and isn't planned.
 
 - The port is up-to-date with the following version of PetitParserDart:
 
