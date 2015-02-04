@@ -56,9 +56,9 @@ abstract class LimitedRepeatingParser extends RepeatingParser
      *
      * @return bool
      */
-    public function equals(Parser $other, $seen = array())
+    public function isEqualTo(Parser $other, $seen = array())
     {
-        return parent::equals($other, $seen)
+        return parent::isEqualTo($other, $seen)
             && $other instanceof self
             && $this->_limit === $other->_limit;
     }

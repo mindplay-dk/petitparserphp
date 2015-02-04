@@ -52,7 +52,7 @@ abstract class CompositeParser extends DelegateParser implements ArrayAccess
     protected $_defined = array();
 
     /**
-     * @var SetableParser[]
+     * @var SettableParser[]
      */
     protected $_undefined = array();
 
@@ -90,7 +90,7 @@ abstract class CompositeParser extends DelegateParser implements ArrayAccess
 
         $this->_undefined = array();
         $this->_completed = true;
-        $this->_delegate = removeSetables($this->ref('start'));
+        $this->_delegate = $this->ref('start');
     }
 
     /**
@@ -117,7 +117,7 @@ abstract class CompositeParser extends DelegateParser implements ArrayAccess
             }
         } else {
             if (! isset($this->_undefined[$name])) {
-                $this->_undefined[$name] = failure("Uninitalized production: $name")->setable();
+                $this->_undefined[$name] = failure("Uninitalized production: $name")->settable();
             }
 
             return $this->_undefined[$name];

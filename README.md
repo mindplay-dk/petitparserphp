@@ -25,6 +25,23 @@ Status and scope of this port
 
   https://github.com/renggli/PetitParserDart/commit/626f2c95c8157d8e80ef101b5c80cf6b7beef183
 
+- Work in progress targeting the following version:
+
+  https://github.com/renggli/PetitParserDart/commit/3ba18393343977780a155277310dddfa2c3caa4d
+
+  TODO:
+
+    * GrammarDefinition
+    * clear inline TODO items
+    * update/port diagnostic/debugging tools
+    * iterable.dart
+    * optimize.dart
+    * transform.dart
+    * test.dart
+    * core_test.dart
+    * debug_test.dart
+    * reflection_test.dart
+
 
 Contributions
 -------------

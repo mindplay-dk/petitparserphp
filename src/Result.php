@@ -20,6 +20,24 @@ abstract class Result extends Context
     }
 
     /**
+     * @see $isSuccess
+     * @ignore
+     */
+    protected function get_isSuccess()
+    {
+        return false;
+    }
+
+    /**
+     * @see $isFailure
+     * @ignore
+     */
+    protected function get_isFailure()
+    {
+        return false;
+    }
+
+    /**
      * @see $value
      * @return mixed
      * @ignore

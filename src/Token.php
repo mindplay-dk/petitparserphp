@@ -93,7 +93,7 @@ class Token extends Accessors implements Comparable
      *
      * @return bool
      */
-    public function equals($other)
+    public function isEqualTo($other)
     {
         return $other instanceof Token
             && $this->_value === $other->_value

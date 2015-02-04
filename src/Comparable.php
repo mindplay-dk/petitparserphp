@@ -9,5 +9,5 @@ interface Comparable
      *
      * @return bool
      */
-    public function equals($other);
+    public function isEqualTo($other);
 }

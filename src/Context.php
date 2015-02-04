@@ -51,24 +51,6 @@ class Context extends Accessors
     }
 
     /**
-     * @see $isSuccess
-     * @ignore
-     */
-    protected function get_isSuccess()
-    {
-        return false;
-    }
-
-    /**
-     * @see $isFailure
-     * @ignore
-     */
-    protected function get_isFailure()
-    {
-        return false;
-    }
-
-    /**
      * Returns a result indicating a parse success.
      *
      * @param mixed $result

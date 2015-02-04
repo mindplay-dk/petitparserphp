@@ -73,9 +73,9 @@ class PredicateParser extends Parser
      *
      * @return bool
      */
-    public function equalProperties(Parser $other)
+    public function hasEqualProperties(Parser $other)
     {
-        return parent::equalProperties($other)
+        return parent::hasEqualProperties($other)
             && $other instanceof self
             && $this->_predicate === $other->_predicate
             && $this->_message === $other->_message;

@@ -5,6 +5,8 @@ namespace petitparser;
 /**
  * A parser that silently consumes input of another parser around
  * its delegate.
+ *
+ * TODO update to current version
  */
 class TrimmingParser extends DelegateParser
 {

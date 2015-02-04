@@ -4,6 +4,8 @@ namespace petitparser;
 
 /**
  * Parser class for individual character classes.
+ *
+ * TODO update to latest version; udpate character matchers (now called "predicates")
  */
 class CharacterParser extends Parser
 {
@@ -64,9 +66,9 @@ class CharacterParser extends Parser
      *
      * @return bool
      */
-    public function equalProperties(Parser $other)
+    public function hasEqualProperties(Parser $other)
     {
-        return parent::equalProperties($other)
+        return parent::hasEqualProperties($other)
             && $other instanceof self
             && $this->_matcher === $other->_matcher
             && $this->_message === $other->_message;

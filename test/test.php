@@ -600,7 +600,7 @@ group(
         test(
             'setable()',
             function () {
-                $parser = char('a')->setable();
+                $parser = char('a')->settable();
                 expectSuccess($parser, 'a', 'a');
                 expectFailure($parser, 'b', 0, 'a expected');
                 expectFailure($parser, '');
@@ -1293,14 +1293,14 @@ group(
             'transform copy',
             function () {
                 $lower = lowercase();
-                $parser = $lower->setable();
+                $parser = $lower->settable();
                 $transformed = transformParser(
                     $parser,
                     function ($parser) {
                         return $parser;
                     }
                 );
-                check($transformed->equals($parser), true);
+                check($transformed->isEqualTo($parser), true);
             }
         );
 
@@ -1319,17 +1319,17 @@ group(
         test(
             'transform delegate',
             function () {
-                $input = lowercase()->setable();
+                $input = lowercase()->settable();
                 $source = lowercase();
                 $target = uppercase();
                 $output = transformParser(
                     $input,
                     function ($parser) use ($source, $target) {
-                        return $source->equals($parser) ? $target : $parser;
+                        return $source->isEqualTo($parser) ? $target : $parser;
                     }
                 );
-                check($input->equals($output), false);
-                check($output->equals($target->setable()), true);
+                check($input->isEqualTo($output), false);
+                check($output->isEqualTo($target->settable()), true);
             }
         );
 
@@ -1343,11 +1343,11 @@ group(
                 $output = transformParser(
                     $input,
                     function ($parser) use ($source, $target) {
-                        return $source->equals($parser) ? $target : $parser;
+                        return $source->isEqualTo($parser) ? $target : $parser;
                     }
                 );
-                check($input->equals($output), false);
-                check($output->equals($target->seq($target)), true);
+                check($input->isEqualTo($output), false);
+                check($output->isEqualTo($target->seq($target)), true);
                 check($output->children[0], $output->children[count($output->children) - 1]);
             }
         );
@@ -1355,27 +1355,27 @@ group(
         test(
             'remove setables',
             function () {
-                $input = lowercase()->setable();
+                $input = lowercase()->settable();
                 $output = removeSetables($input);
-                check($output->equals(lowercase()), true);
+                check($output->isEqualTo(lowercase()), true);
             }
         );
 
         test(
             'remove nested setables',
             function () {
-                $input = lowercase()->setable()->star();
+                $input = lowercase()->settable()->star();
                 $output = removeSetables($input);
-                check($output->equals(lowercase()->star()), true);
+                check($output->isEqualTo(lowercase()->star()), true);
             }
         );
 
         test(
             'remove double setables',
             function () {
-                $input = lowercase()->setable()->setable();
+                $input = lowercase()->settable()->settable();
                 $output = removeSetables($input);
-                check($output->equals(lowercase()), true);
+                check($output->isEqualTo(lowercase()), true);
             }
         );
 
@@ -1389,11 +1389,11 @@ group(
                             $copy = $parser->copy();
                             check(get_class($copy), get_class($parser));
                             check($copy->children, $parser->children, 'same children');
-                            check($copy->equals($copy), true);
-                            check($parser->equals($parser), true);
+                            check($copy->isEqualTo($copy), true);
+                            check($parser->isEqualTo($parser), true);
                             check($copy !== $parser, true);
-                            check($copy->equals($parser), true);
-                            check($parser->equals($copy), true);
+                            check($copy->isEqualTo($parser), true);
+                            check($parser->isEqualTo($copy), true);
                         }
                     );
                 };
@@ -1423,7 +1423,7 @@ group(
                 $verify('repeatGreedy()', digit()->repeatGreedy(word(), 2, 3));
                 $verify('repeatLazy()', digit()->repeatLazy(word(), 2, 3));
                 $verify('seq()', digit()->seq(word()));
-                $verify('setable()', digit()->setable());
+                $verify('setable()', digit()->settable());
                 $verify('star()', digit()->star());
                 $verify('starGreedy()', digit()->starGreedy(word()));
                 $verify('starLazy()', digit()->starLazy(word()));
@@ -1732,7 +1732,7 @@ group(
 group(
     'expression',
     function () {
-        $root = failure()->setable();
+        $root = failure()->settable();
 
         $builder = new ExpressionBuilder();
 

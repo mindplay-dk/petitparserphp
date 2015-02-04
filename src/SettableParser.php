@@ -2,7 +2,7 @@
 
 namespace petitparser;
 
-class SetableParser extends DelegateParser
+class SettableParser extends DelegateParser
 {
     /**
      * @param Parser $parser
@@ -21,6 +21,6 @@ class SetableParser extends DelegateParser
      */
     public function copy()
     {
-        return new SetableParser($this->_delegate);
+        return new SettableParser($this->_delegate);
     }
 }

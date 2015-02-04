@@ -289,11 +289,11 @@ function failure($message = 'unable to parse')
  *
  * @param string $message
  *
- * @return SetableParser
+ * @return SettableParser
  */
 function undefined($message = 'undefined parser')
 {
-    return failure($message)->setable();
+    return failure($message)->settable();
 }
 
 /**
@@ -483,7 +483,7 @@ function removeSetables(Parser $root)
  */
 function _removeSetable(Parser $parser)
 {
-    while ($parser instanceof SetableParser) {
+    while ($parser instanceof SettableParser) {
         $parser = $parser->children[0];
     }
 

@@ -491,11 +491,11 @@ abstract class Parser extends Accessors
      * as [:letter():], but it can be replaced with another parser using
      * [SetableParser.set].
      *
-     * @return SetableParser
+     * @return SettableParser
      */
-    public function setable()
+    public function settable()
     {
-        return new SetableParser($this);
+        return new SettableParser($this);
     }
 
     /**
@@ -632,7 +632,7 @@ abstract class Parser extends Accessors
      *
      * @return bool
      */
-    public function equals(Parser $other, $seen = array())
+    public function isEqualTo(Parser $other, $seen = array())
     {
         if ($seen === null) {
           $seen = array();
@@ -645,8 +645,8 @@ abstract class Parser extends Accessors
         $seen[] = $this;
 
         return get_class($this) === get_class($other)
-            && $this->equalProperties($other)
-            && $this->equalChildren($other, $seen);
+            && $this->hasEqualProperties($other)
+            && $this->hasEqualChildren($other, $seen);
     }
 
     /**
@@ -659,7 +659,7 @@ abstract class Parser extends Accessors
      *
      * @return bool
      */
-    public function equalProperties(
+    public function hasEqualProperties(
         /** @noinspection PhpUnusedParameterInspection */
         Parser $other)
     {
@@ -672,7 +672,7 @@ abstract class Parser extends Accessors
      *
      * @return bool
      */
-    protected function equalChildren(Parser $other, $seen = array())
+    protected function hasEqualChildren(Parser $other, $seen = array())
     {
         $thisChildren = $this->children;
         $otherChildren = $other->children;
@@ -682,7 +682,7 @@ abstract class Parser extends Accessors
         }
 
         for ($i = 0; $i < length($thisChildren); $i++) {
-            if (! $thisChildren[$i]->equals($otherChildren[$i], $seen)) {
+            if (! $thisChildren[$i]->isEqualTo($otherChildren[$i], $seen)) {
                 return false;
             }
         }
