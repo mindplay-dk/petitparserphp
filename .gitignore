@@ -1,3 +1,3 @@
-/.idea
-/vendor
-/build
+.idea
+vendor
+test/build
