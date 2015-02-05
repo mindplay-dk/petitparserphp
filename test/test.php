@@ -1307,17 +1307,18 @@ group(
             }
         );
 
-// TODO debug this test, which goes into an infinite loop
-//    test('transform root', function () {
-//      $input = lowercase();
-//      $source = lowercase();
-//      $target = uppercase();
-//      $output = transformParser($input, function (Parser $parser) use ($source, $target) {
-//        return $source->equals($parser) ? $target : $parser;
-//      });
-//      check($input->match($output), false);
-//      check($output->match($target), true);
-//    });
+        // TODO debug this test, which goes into an infinite loop
+//        test('transform root', function () {
+//            $input = lowercase();
+//            $source = lowercase();
+//            $target = uppercase();
+//            $output = transformParser($input, function (Parser $parser) use ($source, $target) {
+//                return $source->isEqualTo($parser) ? $target : $parser;
+//            });
+//            check($input !== $output, true);
+//            check($input->isEqualTo($output), false);
+//            check($input->children[0] !== $output->children[0], true);
+//        });
 
         test(
             'transform delegate',
