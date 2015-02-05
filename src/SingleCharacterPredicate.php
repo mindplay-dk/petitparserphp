@@ -4,7 +4,7 @@ namespace petitparser;
 
 use InvalidArgumentException;
 
-class SingleCharMatcher extends CharMatcher
+class SingleCharacterPredicate extends CharacterPredicate
 {
     /**
      * @var int
@@ -24,7 +24,7 @@ class SingleCharMatcher extends CharMatcher
      *
      * @return bool
      */
-    public function match($value)
+    public function test($value)
     {
         return $this->_value === $value;
     }

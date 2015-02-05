@@ -2,14 +2,14 @@
 
 namespace petitparser;
 
-class WordCharMatcher extends CharMatcher
+class WordCharacterPredicate extends CharacterPredicate
 {
     /**
      * @param int $value
      *
      * @return bool
      */
-    public function match($value)
+    public function test($value)
     {
         return ($value >= 65 && $value <= 90)
             || ($value >= 97 && $value <= 122)

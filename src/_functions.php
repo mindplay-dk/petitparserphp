@@ -69,7 +69,7 @@ function toCharCode($element)
 function char($element, $message = null)
 {
     return new CharacterParser(
-        new SingleCharMatcher($element),
+        new SingleCharacterPredicate($element),
         $message ? : "\"{$element}\" expected");
 }
 
@@ -85,7 +85,7 @@ function digit($message = null)
     static $digitCharMatcher = null;
 
     if ($digitCharMatcher === null) {
-        $digitCharMatcher = new DigitCharMatcher();
+        $digitCharMatcher = new DigitCharacterPredicate();
     }
 
     return new CharacterParser(
@@ -105,7 +105,7 @@ function letter($message = null)
     static $letterCharMatcher = null;
 
     if ($letterCharMatcher === null) {
-        $letterCharMatcher = new LetterCharMatcher();
+        $letterCharMatcher = new LetterCharacterPredicate();
     }
 
     return new CharacterParser(
@@ -125,7 +125,7 @@ function lowercase($message = null)
     static $lowercaseCharMatcher = null;
 
     if ($lowercaseCharMatcher === null) {
-        $lowercaseCharMatcher = new LowercaseCharMatcher();
+        $lowercaseCharMatcher = new LowercaseCharacterPredicate();
     }
 
     return new CharacterParser(
@@ -148,25 +148,25 @@ function pattern($element, $message = null)
     if ($patternParser === null) {
         $single = any()->map(
             function ($each) {
-                return new SingleCharMatcher($each);
+                return new SingleCharacterPredicate($each);
             }
         );
 
         $multiple = any()->seq(char('-'))->seq(any())->map(
             function ($each) {
-                return new RangeCharMatcher($each[0], $each[2]);
+                return new RangeCharacterPredicate($each[0], $each[2]);
             }
         );
 
         $positive = $multiple->or_($single)->plus()->map(
             function ($each) {
-                return count($each) === 1 ? $each[0] : new AltCharMatcher($each);
+                return count($each) === 1 ? $each[0] : new AltCharacterPredicate($each);
             }
         );
 
         $patternParser = char('^')->optional()->seq($positive)->map(
             function ($each) {
-                return $each[0] === null ? $each[1] : new NotCharMatcher($each[1]);
+                return $each[0] === null ? $each[1] : new NotCharacterPredicate($each[1]);
             }
         );
     }
@@ -188,7 +188,7 @@ function pattern($element, $message = null)
 function range($start, $stop, $message = null)
 {
     return new CharacterParser(
-        new RangeCharMatcher($start, $stop),
+        new RangeCharacterPredicate($start, $stop),
         $message ?: "{$start}..{$stop} expected");
 }
 
@@ -204,7 +204,7 @@ function uppercase($message = null)
     static $uppercaseCharMatcher = null;
 
     if ($uppercaseCharMatcher === null) {
-        $uppercaseCharMatcher = new UppercaseCharMatcher();
+        $uppercaseCharMatcher = new UppercaseCharacterPredicate();
     }
 
     return new CharacterParser(
@@ -224,7 +224,7 @@ function whitespace($message = null)
     static $whitespaceCharMatcher = null;
 
     if ($whitespaceCharMatcher === null) {
-        $whitespaceCharMatcher = new WhitespaceCharMatcher();
+        $whitespaceCharMatcher = new WhitespaceCharacterPredicate();
     }
 
     return new CharacterParser(
@@ -244,7 +244,7 @@ function word($message = null)
     static $wordCharMatcher = null;
 
     if ($wordCharMatcher === null) {
-        $wordCharMatcher = new WordCharMatcher();
+        $wordCharMatcher = new WordCharacterPredicate();
     }
 
     return new CharacterParser(

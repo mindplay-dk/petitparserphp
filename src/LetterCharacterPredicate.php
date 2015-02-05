@@ -2,9 +2,9 @@
 
 namespace petitparser;
 
-class LetterCharMatcher extends CharMatcher
+class LetterCharacterPredicate extends CharacterPredicate
 {
-    public function match($value)
+    public function test($value)
     {
         return ($value >= 65 && $value <= 90)
             || ($value >= 97 && $value <= 122);

@@ -5,14 +5,14 @@ namespace petitparser;
 /**
  * Internal character matcher that negates the result.
  */
-class NotCharMatcher extends CharMatcher
+class NotCharacterPredicate extends CharacterPredicate
 {
     /**
-     * @var CharMatcher
+     * @var CharacterPredicate
      */
     protected $_matcher;
 
-    public function __construct(CharMatcher $matcher)
+    public function __construct(CharacterPredicate $matcher)
     {
         $this->_matcher = $matcher;
     }
@@ -22,8 +22,8 @@ class NotCharMatcher extends CharMatcher
      *
      * @return bool
      */
-    public function match($value)
+    public function test($value)
     {
-        return ! $this->_matcher->match($value);
+        return ! $this->_matcher->test($value);
     }
 }

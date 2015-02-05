@@ -2,14 +2,14 @@
 
 namespace petitparser;
 
-class WhitespaceCharMatcher extends CharMatcher
+class WhitespaceCharacterPredicate extends CharacterPredicate
 {
     /**
      * @param int $value
      *
      * @return bool
      */
-    public function match($value)
+    public function test($value)
     {
         return $value === 0x09 || $value === 0x0A || $value === 0x0B || $value === 0x0C
             || $value === 0x0D || $value === 0x20 || $value === 0x85 || $value === 0xA0

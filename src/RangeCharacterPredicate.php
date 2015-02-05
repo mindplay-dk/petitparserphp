@@ -2,7 +2,7 @@
 
 namespace petitparser;
 
-class RangeCharMatcher extends CharMatcher
+class RangeCharacterPredicate extends CharacterPredicate
 {
     /**
      * @var int
@@ -29,7 +29,7 @@ class RangeCharMatcher extends CharMatcher
      *
      * @return bool
      */
-    public function match($value)
+    public function test($value)
     {
         return $value >= $this->_start
             && $value <= $this->_stop;

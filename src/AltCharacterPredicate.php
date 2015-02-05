@@ -5,15 +5,15 @@ namespace petitparser;
 /**
  * Internal character matcher for alternatives.
  */
-class AltCharMatcher extends CharMatcher
+class AltCharacterPredicate extends CharacterPredicate
 {
     /**
-     * @var CharMatcher[]
+     * @var CharacterPredicate[]
      */
     protected $_matchers;
 
     /**
-     * @param CharMatcher[] $matchers
+     * @param CharacterPredicate[] $matchers
      */
     public function __construct($matchers)
     {
@@ -25,10 +25,10 @@ class AltCharMatcher extends CharMatcher
      *
      * @return bool
      */
-    public function match($value)
+    public function test($value)
     {
         foreach ($this->_matchers as $matcher) {
-            if ($matcher->match($value)) {
+            if ($matcher->test($value)) {
                 return true;
             }
         }

@@ -2,14 +2,14 @@
 
 namespace petitparser;
 
-class DigitCharMatcher extends CharMatcher
+class DigitCharacterPredicate extends CharacterPredicate
 {
     /**
      * @param int $value
      *
      * @return bool
      */
-    public function match($value)
+    public function test($value)
     {
         return $value >= 48 && $value <= 57;
     }

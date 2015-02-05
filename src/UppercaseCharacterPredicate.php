@@ -2,14 +2,14 @@
 
 namespace petitparser;
 
-class UppercaseCharMatcher extends CharMatcher
+class UppercaseCharacterPredicate extends CharacterPredicate
 {
     /**
      * @param int $value
      *
      * @return bool
      */
-    public function match($value)
+    public function test($value)
     {
         return $value >= 65 && $value <= 90;
     }

@@ -4,15 +4,13 @@ namespace petitparser;
 
 /**
  * Parser class for individual character classes.
- *
- * TODO update to latest version; udpate character matchers (now called "predicates")
  */
 class CharacterParser extends Parser
 {
     /**
-     * @var CharMatcher
+     * @var CharacterPredicate
      */
-    private $_matcher;
+    private $_predicate;
 
     /**
      * @var string
@@ -20,12 +18,12 @@ class CharacterParser extends Parser
     private $_message;
 
     /**
-     * @param CharMatcher $matcher
+     * @param CharacterPredicate $predicate
      * @param string       $message
      */
-    public function __construct(CharMatcher $matcher, $message)
+    public function __construct(CharacterPredicate $predicate, $message)
     {
-        $this->_matcher = $matcher;
+        $this->_predicate = $predicate;
         $this->_message = $message;
     }
 
@@ -38,7 +36,7 @@ class CharacterParser extends Parser
         $position = $context->position;
         $char = $buffer->charAt($position);
 
-        if ($position < $buffer->length && $this->_matcher->match($buffer->charCodeAt($position))) {
+        if ($position < $buffer->length && $this->_predicate->test($buffer->charCodeAt($position))) {
             return $context->success($char, $position + 1);
         }
 
@@ -58,7 +56,7 @@ class CharacterParser extends Parser
      */
     public function copy()
     {
-        return new CharacterParser($this->_matcher, $this->_message);
+        return new CharacterParser($this->_predicate, $this->_message);
     }
 
     /**
@@ -70,7 +68,7 @@ class CharacterParser extends Parser
     {
         return parent::hasEqualProperties($other)
             && $other instanceof self
-            && $this->_matcher === $other->_matcher
+            && $this->_predicate === $other->_predicate
             && $this->_message === $other->_message;
     }
 }
