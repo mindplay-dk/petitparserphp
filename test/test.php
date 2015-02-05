@@ -765,7 +765,76 @@ group(
         );
 
         test(
-            'pattern() with composed',
+            'pattern() with overlapping range',
+            function () {
+                $parser = pattern('b-da-c');
+                expectSuccess($parser, 'a', 'a');
+                expectSuccess($parser, 'b', 'b');
+                expectSuccess($parser, 'c', 'c');
+                expectSuccess($parser, 'd', 'd');
+                expectFailure($parser, 'e', 0, '[b-da-c] expected');
+                expectFailure($parser, '', 0, '[b-da-c] expected');
+            }
+        );
+
+        test(
+            'pattern() with adjacent range',
+            function () {
+                $parser = pattern('c-ea-c');
+                expectSuccess($parser, 'a', 'a');
+                expectSuccess($parser, 'b', 'b');
+                expectSuccess($parser, 'c', 'c');
+                expectSuccess($parser, 'd', 'd');
+                expectSuccess($parser, 'e', 'e');
+                expectFailure($parser, 'f', 0, '[c-ea-c] expected');
+                expectFailure($parser, '', 0, '[c-ea-c] expected');
+            }
+        );
+
+        test(
+            'pattern() with prefix range',
+            function () {
+                $parser = pattern('a-ea-c');
+                expectSuccess($parser, 'a', 'a');
+                expectSuccess($parser, 'b', 'b');
+                expectSuccess($parser, 'c', 'c');
+                expectSuccess($parser, 'd', 'd');
+                expectSuccess($parser, 'e', 'e');
+                expectFailure($parser, 'f', 0, '[a-ea-c] expected');
+                expectFailure($parser, '', 0, '[a-ea-c] expected');
+            }
+        );
+
+        test(
+            'pattern() with postfix range',
+            function () {
+                $parser = pattern('a-ec-e');
+                expectSuccess($parser, 'a', 'a');
+                expectSuccess($parser, 'b', 'b');
+                expectSuccess($parser, 'c', 'c');
+                expectSuccess($parser, 'd', 'd');
+                expectSuccess($parser, 'e', 'e');
+                expectFailure($parser, 'f', 0, '[a-ec-e] expected');
+                expectFailure($parser, '', 0, '[a-ec-e] expected');
+            }
+        );
+
+        test(
+            'pattern() with repeated range',
+            function () {
+                $parser = pattern('a-ea-e');
+                expectSuccess($parser, 'a', 'a');
+                expectSuccess($parser, 'b', 'b');
+                expectSuccess($parser, 'c', 'c');
+                expectSuccess($parser, 'd', 'd');
+                expectSuccess($parser, 'e', 'e');
+                expectFailure($parser, 'f', 0, '[a-ea-e] expected');
+                expectFailure($parser, '', 0, '[a-ea-e] expected');
+            }
+        );
+
+        test(
+            'pattern() with composed range',
             function () {
                 $parser = pattern('ac-df-');
                 expectSuccess($parser, 'a', 'a');
@@ -837,6 +906,47 @@ group(
                 expectSuccess($parser, "\f", "\f");
                 expectFailure($parser, 'z', 0, 'whitespace expected');
                 expectFailure($parser, '');
+            }
+        );
+
+        test(
+            'whitespace() unicode',
+            function () {
+                $chars = array(
+                    fromCharCode(0x09),
+                    fromCharCode(0x0A),
+                    fromCharCode(0x0B),
+                    fromCharCode(0x0C),
+                    fromCharCode(0x0D),
+                    fromCharCode(0x20),
+                    fromCharCode(0x85),
+                    fromCharCode(0xA0),
+                    fromCharCode(0x1680),
+                    fromCharCode(0x180E),
+                    fromCharCode(0x2000),
+                    fromCharCode(0x2001),
+                    fromCharCode(0x2002),
+                    fromCharCode(0x2003),
+                    fromCharCode(0x2004),
+                    fromCharCode(0x2005),
+                    fromCharCode(0x2006),
+                    fromCharCode(0x2007),
+                    fromCharCode(0x2008),
+                    fromCharCode(0x2009),
+                    fromCharCode(0x200A),
+                    fromCharCode(0x2028),
+                    fromCharCode(0x2029),
+                    fromCharCode(0x202F),
+                    fromCharCode(0x205F),
+                    fromCharCode(0x3000),
+                    fromCharCode(0xFEFF),
+                );
+
+                $string = implode('', $chars);
+
+                $parser = whitespace()->star()->flatten()->end_();
+
+                expectSuccess($parser, $string, $string);
             }
         );
 

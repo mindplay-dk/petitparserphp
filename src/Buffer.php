@@ -79,7 +79,7 @@ class Buffer extends Accessors
             $string,
             $encoding,
             0,
-            (int) (mb_strlen($string, '8bit') / 4)
+            mb_strlen($string, 'UTF-32')
         );
     }
 

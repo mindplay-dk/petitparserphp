@@ -61,6 +61,18 @@ function toCharCode($element)
 }
 
 /**
+ * Internal method to convert a unicode character code to a string
+ *
+ * @param int $ord Unicode character code
+ * @param string|null $encoding encoding (or NULL to use mb_internal_encoding())
+ *
+ * @return string
+ */
+function fromCharCode($ord, $encoding = null) {
+    return mb_convert_encoding(pack("N", $ord), $encoding ?: mb_internal_encoding(), 'UCS-4BE');
+}
+
+/**
  * Returns a parser that accepts a specific character only.
  *
  * @param int|string $element
@@ -150,7 +162,7 @@ function pattern($element, $message = null)
     if ($patternParser === null) {
         $single = any()->map(
             function ($each) {
-                return new SingleCharacterPredicate($each);
+                return new RangeCharacterPredicate($each, $each);
             }
         );
 
@@ -162,7 +174,7 @@ function pattern($element, $message = null)
 
         $positive = $multiple->or_($single)->plus()->map(
             function ($each) {
-                return count($each) === 1 ? $each[0] : new AltCharacterPredicate($each);
+                return _optimizedRanges($each);
             }
         );
 

@@ -174,14 +174,14 @@ function throws($exception_type, $why, $function)
 }
 
 /**
- * @param Parser $parser
- * @param mixed  $input
- * @param mixed  $expected
- * @param int    $position
+ * @param Parser        $parser
+ * @param Buffer|string $input
+ * @param mixed         $expected
+ * @param int           $position
  */
 function expectSuccess(Parser $parser, $input, $expected, $position = null)
 {
-    $buffer = Buffer::create($input);
+    $buffer = is_string($input) ? Buffer::create($input) : $input;
 
     $result = $parser->parse($buffer);
 
@@ -197,14 +197,14 @@ function expectSuccess(Parser $parser, $input, $expected, $position = null)
 }
 
 /**
- * @param Parser $parser
- * @param mixed  $input
- * @param int    $position
- * @param string $message
+ * @param Parser        $parser
+ * @param Buffer|string $input
+ * @param int           $position
+ * @param string        $message
  */
 function expectFailure(Parser $parser, $input, $position = 0, $message = null)
 {
-    $buffer = Buffer::create($input);
+    $buffer = is_string($input) ? Buffer::create($input) : $input;
 
     $result = $parser->parse($buffer);
 
