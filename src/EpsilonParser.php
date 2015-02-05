@@ -1,5 +1,7 @@
 <?php
 
+declare(encoding='UTF-8');
+
 namespace petitparser;
 
 class EpsilonParser extends Parser

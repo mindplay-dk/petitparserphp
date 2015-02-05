@@ -1,9 +1,11 @@
 <?php
 
+declare(encoding='UTF-8');
+
 namespace petitparser;
 
 /**
- * Internal abstract character matcher class.
+ * Abstract character predicate class.
  */
 abstract class CharacterPredicate
 {
