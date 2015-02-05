@@ -1,7 +1,5 @@
 <?php
 
-declare(encoding='UTF-8');
-
 namespace petitparser;
 
 use PHP_CodeCoverage_Report_Clover;
@@ -13,7 +11,7 @@ header('Content-type: text/plain');
 
 mb_internal_encoding('UTF-8'); // this test-suite assumes UTF-8 encoding
 
-$enable_coverage = false; // set to false to speed up test
+$enable_coverage = true; // set to false to speed up test
 
 if ($enable_coverage && coverage()) {
     coverage()->filter()->addDirectoryToWhitelist(dirname(__DIR__) . '/src');

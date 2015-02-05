@@ -1,7 +1,5 @@
 <?php
 
-declare(encoding = 'UTF-8');
-
 namespace petitparser;
 
 class WhitespaceCharacterPredicate extends CharacterPredicate
