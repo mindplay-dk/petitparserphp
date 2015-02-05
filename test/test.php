@@ -9,8 +9,11 @@ require __DIR__ . '/header.php';
 
 header('Content-type: text/plain');
 
-if (coverage()) {
+$enable_coverage = true; // set to false to speed up test
+
+if ($enable_coverage && coverage()) {
     coverage()->filter()->addDirectoryToWhitelist(dirname(__DIR__) . '/src');
+    coverage()->start('test');
 }
 
 class PluggableCompositeParser extends CompositeParser
@@ -2117,7 +2120,8 @@ group(
     }
 );
 
-group('php',
+group(
+    'php',
     function () {
         test(
             'ISO string buffer',
@@ -2220,7 +2224,9 @@ group('php',
     }
 );
 
-if (coverage()) {
+if ($enable_coverage && coverage()) {
+    coverage()->stop();
+
     $report = new PHP_CodeCoverage_Report_Text(10, 90, false, false);
 
     echo $report->process(coverage(), false);

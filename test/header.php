@@ -26,20 +26,14 @@ set_error_handler(
 /**
  * @param string|null   $name
  * @param callable|null $fn
- * @return string
+ *
+ * @return void
  */
 function group($name = null, $fn = null)
 {
-    static $current;
+    echo "\n=== GROUP: $name ===\n";
 
-    echo "=== GROUP: $name ===\n\n";
-
-    if ($name !== null) {
-        $current = $name;
-        call_user_func($fn);
-    }
-
-    return $current;
+    call_user_func($fn);
 }
 
 /**
@@ -51,9 +45,7 @@ function test($name, $function)
     echo "\n--- TEST: $name\n\n";
 
     try {
-        coverage('[' . group() . '] ' . $name);
         call_user_func($function);
-        coverage();
     } catch (Exception $e) {
         $type = get_class($e);
         $message = $e->getMessage();
@@ -67,45 +59,59 @@ function test($name, $function)
 
 /**
  * @param bool   $result result of assertion
- * @param string $text   description of assertion
+ * @param string $why    description of assertion
  * @param mixed  $value  optional value (displays on failure)
  */
-function ok($result, $text, $value = null)
+function ok($result, $why = null, $value = null)
 {
     if ($result === true) {
-        echo "- PASS: $text\n";
+        echo "- PASS: " . ($why === null ? 'OK' : $why) . ($value === null ? '' : ' (' . format($value) . ')') . "\n";
     } else {
-        echo "# FAIL: $text" . ($value === null ? '' : ' (' . var_export($value, true) . ')') . "\n";
+        echo "# FAIL: " . ($why === null ? 'ERROR' : $why) . ($value === null ? '' : ' - ' . format($value,
+                    true)) . "\n";
         status(false);
     }
 }
 
 /**
- * @param mixed  $value    tested value
+ * @param mixed  $value    value
  * @param mixed  $expected expected value
- * @param string $text     description of comparison
+ * @param string $why      description of assertion
  */
-function check($value, $expected, $text = 'check')
+function check($value, $expected, $why = null)
 {
-    $check = $value === $expected;
+    $result = $value === $expected;
 
-    ok(
-        $check,
-        "{$text} (got " . format($value, !$check)
-        . ($check === false ? (" expected " . format($expected)) : '') . ")"
-    );
+    $info = $result
+        ? format($value)
+        : "expected: " . format($expected, true) . ", got: " . format($value, true);
+
+    ok($result, ($why === null ? $info : "$why ($info)"));
 }
 
 /**
  * @param mixed $value
- * @param bool $verbose
+ * @param bool  $verbose
  *
  * @return string
  */
 function format($value, $verbose = false)
 {
+    if ($value instanceof Exception) {
+        return get_class($value)
+        . ($verbose ? ": \"" . $value->getMessage() . "\"" : '');
+    }
+
     if (!$verbose && is_array($value)) {
         return 'array[' . count($value) . ']';
+    }
+
+    if (is_bool($value)) {
+        return $value ? 'TRUE' : 'FALSE';
+    }
+
+    if (is_object($value) && !$verbose) {
+        return get_class($value);
     }
 
     return print_r($value, true);
@@ -115,7 +121,8 @@ function format($value, $verbose = false)
  * @param bool|null $status test status
  * @return int number of failures
  */
-function status($status = null) {
+function status($status = null)
+{
     static $failures = 0;
 
     if ($status === false) {
@@ -126,9 +133,9 @@ function status($status = null) {
 }
 
 /**
- * @param float $value    tested value
- * @param float $expected expected value
- * @param string $text    description of comparison
+ * @param float  $value    tested value
+ * @param float  $expected expected value
+ * @param string $text     description of comparison
  */
 function checkNum($value, $expected, $text = 'checkNum')
 {
@@ -142,26 +149,26 @@ function checkNum($value, $expected, $text = 'checkNum')
 }
 
 /**
- * @param string   $exception Exception type name
- * @param string   $when      description of assertion
- * @param callable $function  function expected to throw
+ * @param string   $exception_type Exception type name
+ * @param string   $why            description of assertion
+ * @param callable $function       function expected to throw
  */
-function throws($exception, $when, $function)
+function throws($exception_type, $why, $function)
 {
     try {
         call_user_func($function);
     } catch (Exception $e) {
-        if ($e instanceof $exception) {
-            ok(true, "throws $exception $when");
+        if ($e instanceof $exception_type) {
+            ok(true, $why, $e);
+            return;
+        } else {
+            $actual_type = get_class($e);
+            ok(false, "$why (expected $exception_type but $actual_type was thrown)");
             return;
         }
     }
 
-    $why = isset($e)
-        ? "unexpected exception " . get_class($e)
-        : "no exception was thrown";
-
-    ok(false, "throws $exception $when - $why");
+    ok(false, "$why (expected exception $exception_type was NOT thrown)");
 }
 
 /**
@@ -209,13 +216,11 @@ function expectFailure(Parser $parser, $input, $position = 0, $message = null)
 }
 
 /**
- * @param string|null $text description (to start coverage); or null (to stop coverage)
- * @return PHP_CodeCoverage|null
+ * @return PHP_CodeCoverage|null code coverage service, if available
  */
-function coverage($text = null)
+function coverage()
 {
     static $coverage = null;
-    static $running = false;
 
     if ($coverage === false) {
         return null; // code coverage unavailable
@@ -228,16 +233,6 @@ function coverage($text = null)
             echo "# Notice: no code coverage run-time available\n";
             $coverage = false;
             return null;
-        }
-    }
-
-    if (is_string($text)) {
-        $coverage->start($text);
-        $running = true;
-    } else {
-        if ($running) {
-            $coverage->stop();
-            $running = false;
         }
     }
 
