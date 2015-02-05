@@ -9,7 +9,7 @@ require __DIR__ . '/header.php';
 
 header('Content-type: text/plain');
 
-$enable_coverage = true; // set to false to speed up test
+$enable_coverage = false; // set to false to speed up test
 
 if ($enable_coverage && coverage()) {
     coverage()->filter()->addDirectoryToWhitelist(dirname(__DIR__) . '/src');
@@ -55,7 +55,7 @@ group(
             function () {
                 $parser = char('a')->and_();
                 expectSuccess($parser, 'a', 'a', 0);
-                expectFailure($parser, 'b', 0, 'a expected');
+                expectFailure($parser, 'b', 0, '"a" expected');
                 expectFailure($parser, '');
             }
         );
@@ -87,7 +87,7 @@ group(
             'end()',
             function () {
                 $parser = char('a')->end_();
-                expectFailure($parser, '', 0, 'a expected');
+                expectFailure($parser, '', 0, '"a" expected');
                 expectSuccess($parser, 'a', 'a');
                 expectFailure($parser, 'aa', 1, 'end of input expected');
             }
@@ -243,7 +243,7 @@ group(
             'plus()',
             function () {
                 $parser = char('a')->plus();
-                expectFailure($parser, '', 0, 'a expected');
+                expectFailure($parser, '', 0, '"a" expected');
                 expectSuccess($parser, 'a', array('a'));
                 expectSuccess($parser, 'aa', array('a', 'a'));
                 expectSuccess($parser, 'aaa', array('a', 'a', 'a'));
@@ -297,8 +297,8 @@ group(
             'times()',
             function () {
                 $parser = char('a')->times(2);
-                expectFailure($parser, '', 0, 'a expected');
-                expectFailure($parser, 'a', 1, 'a expected');
+                expectFailure($parser, '', 0, '"a" expected');
+                expectFailure($parser, 'a', 1, '"a" expected');
                 expectSuccess($parser, 'aa', array('a', 'a'));
                 expectSuccess($parser, 'aaa', array('a', 'a'), 2);
             }
@@ -308,8 +308,8 @@ group(
             'repeat()',
             function () {
                 $parser = char('a')->repeat(2, 3);
-                expectFailure($parser, '', 0, 'a expected');
-                expectFailure($parser, 'a', 1, 'a expected');
+                expectFailure($parser, '', 0, '"a" expected');
+                expectFailure($parser, 'a', 1, '"a" expected');
                 expectSuccess($parser, 'aa', array('a', 'a'));
                 expectSuccess($parser, 'aaa', array('a', 'a', 'a'));
                 expectSuccess($parser, 'aaaa', array('a', 'a', 'a'), 3);
@@ -409,7 +409,7 @@ group(
             'separatedBy()',
             function () {
                 $parser = char('a')->separatedBy(char('b'));
-                expectFailure($parser, '', 0, 'a expected');
+                expectFailure($parser, '', 0, '"a" expected');
                 expectSuccess($parser, 'a', array('a'));
                 expectSuccess($parser, 'ab', array('a'), 1);
                 expectSuccess($parser, 'aba', array('a', 'b', 'a'));
@@ -426,7 +426,7 @@ group(
                     char('b'),
                     false # $includeSeparators
                 );
-                expectFailure($parser, '', 0, 'a expected');
+                expectFailure($parser, '', 0, '"a" expected');
                 expectSuccess($parser, 'a', array('a'));
                 expectSuccess($parser, 'ab', array('a'), 1);
                 expectSuccess($parser, 'aba', array('a', 'a'));
@@ -444,7 +444,7 @@ group(
                     true, # $includeSeparators
                     true # $optionalSeparatorAtEnd
                 );
-                expectFailure($parser, '', 0, 'a expected');
+                expectFailure($parser, '', 0, '"a" expected');
                 expectSuccess($parser, 'a', array('a'));
                 expectSuccess($parser, 'ab', array('a', 'b'));
                 expectSuccess($parser, 'aba', array('a', 'b', 'a'));
@@ -462,7 +462,7 @@ group(
                     false, # $includeSeparators
                     true # $optionalSeparatorAtEnd
                 );
-                expectFailure($parser, '', 0, 'a expected');
+                expectFailure($parser, '', 0, '"a" expected');
                 expectSuccess($parser, 'a', array('a'));
                 expectSuccess($parser, 'ab', array('a'));
                 expectSuccess($parser, 'aba', array('a', 'a'));
@@ -564,15 +564,15 @@ group(
                 expectSuccess($parser, '  a', 'a');
                 expectSuccess($parser, 'a  ', 'a');
                 expectSuccess($parser, '  a  ', 'a');
-                expectFailure($parser, '', 0, 'a expected');
-                expectFailure($parser, 'b', 0, 'a expected');
-                expectFailure($parser, ' b', 1, 'a expected');
-                expectFailure($parser, '  b', 2, 'a expected');
+                expectFailure($parser, '', 0, '"a" expected');
+                expectFailure($parser, 'b', 0, '"a" expected');
+                expectFailure($parser, ' b', 1, '"a" expected');
+                expectFailure($parser, '  b', 2, '"a" expected');
             }
         );
 
         test(
-            'trim() custom',
+            'trim() both',
             function () {
                 $parser = char('a')->trim(char('*'));
                 expectSuccess($parser, 'a', 'a');
@@ -582,10 +582,30 @@ group(
                 expectSuccess($parser, '**a', 'a');
                 expectSuccess($parser, 'a**', 'a');
                 expectSuccess($parser, '**a**', 'a');
-                expectFailure($parser, '', 0, 'a expected');
-                expectFailure($parser, 'b', 0, 'a expected');
-                expectFailure($parser, '*b', 1, 'a expected');
-                expectFailure($parser, '**b', 2, 'a expected');
+                expectFailure($parser, '', 0, '"a" expected');
+                expectFailure($parser, 'b', 0, '"a" expected');
+                expectFailure($parser, '*b', 1, '"a" expected');
+                expectFailure($parser, '**b', 2, '"a" expected');
+            }
+        );
+
+        test(
+            'trim() left/right',
+            function () {
+                $parser = char('a')->trim(char('*'), char('#'));
+                expectSuccess($parser, 'a', 'a');
+                expectSuccess($parser, '*a', 'a');
+                expectSuccess($parser, 'a#', 'a');
+                expectSuccess($parser, '*a#', 'a');
+                expectSuccess($parser, '**a', 'a');
+                expectSuccess($parser, 'a##', 'a');
+                expectSuccess($parser, '**a##', 'a');
+                expectFailure($parser, '', 0, '"a" expected');
+                expectFailure($parser, 'b', 0, '"a" expected');
+                expectFailure($parser, '*b', 1, '"a" expected');
+                expectFailure($parser, '**b', 2, '"a" expected');
+                expectFailure($parser, '#a', 0, '"a" expected');
+                expectSuccess($parser, 'a*', 'a', 1);
             }
         );
 
@@ -605,7 +625,7 @@ group(
             function () {
                 $parser = char('a')->settable();
                 expectSuccess($parser, 'a', 'a');
-                expectFailure($parser, 'b', 0, 'a expected');
+                expectFailure($parser, 'b', 0, '"a" expected');
                 expectFailure($parser, '');
             }
         );
@@ -620,7 +640,7 @@ group(
             function () {
                 $parser = char('a');
                 expectSuccess($parser, 'a', 'a');
-                expectFailure($parser, 'b', 0, 'a expected');
+                expectFailure($parser, 'b', 0, '"a" expected');
                 expectFailure($parser, '');
             }
         );
@@ -1138,11 +1158,11 @@ group(
         test(
             'invalid string',
             function () use ($STRING) {
-                expectFailure($STRING, '"', 1, '" expected');
-                expectFailure($STRING, '"a', 2, '" expected');
-                expectFailure($STRING, '"ab', 3, '" expected');
-                expectFailure($STRING, 'a"', 0, '" expected');
-                expectFailure($STRING, 'ab"', 0, '" expected');
+                expectFailure($STRING, '"', 1, '""" expected');
+                expectFailure($STRING, '"a', 2, '""" expected');
+                expectFailure($STRING, '"ab', 3, '""" expected');
+                expectFailure($STRING, 'a"', 0, '""" expected');
+                expectFailure($STRING, 'ab"', 0, '""" expected');
             }
         );
 
@@ -1167,7 +1187,7 @@ group(
             function () use ($KEYWORD) {
                 expectFailure($KEYWORD, 'retur f', 0, 'return expected');
                 expectFailure($KEYWORD, 'return1', 6, 'whitespace expected');
-                expectFailure($KEYWORD, 'return  _', 8, '" expected');
+                expectFailure($KEYWORD, 'return  _', 8, '""" expected');
             }
         );
 
@@ -1451,7 +1471,7 @@ group(
                     return $self->def('start', char('a'));
                 });
                 expectSuccess($parser, 'a', 'a', 1);
-                expectFailure($parser, 'b', 0, 'a expected');
+                expectFailure($parser, 'b', 0, '"a" expected');
                 expectFailure($parser, '');
             }
         );
@@ -1479,7 +1499,7 @@ group(
                 });
 
                 expectSuccess($parser, 'a', 'a', 1);
-                expectFailure($parser, 'b', 0, 'a expected');
+                expectFailure($parser, 'b', 0, '"a" expected');
                 expectFailure($parser, '');
             }
         );
@@ -1500,7 +1520,7 @@ group(
                 });
 
                 expectSuccess($parser, 'a', 'a', 1);
-                expectFailure($parser, 'b', 0, 'a expected');
+                expectFailure($parser, 'b', 0, '"a" expected');
                 expectFailure($parser, '');
             }
         );

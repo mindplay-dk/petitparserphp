@@ -70,7 +70,7 @@ function char($element, $message = null)
 {
     return new CharacterParser(
         new SingleCharMatcher($element),
-        $message ? : "{$element} expected");
+        $message ? : "\"{$element}\" expected");
 }
 
 /**

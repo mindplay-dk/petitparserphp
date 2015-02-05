@@ -5,25 +5,29 @@ namespace petitparser;
 /**
  * A parser that silently consumes input of another parser around
  * its delegate.
- *
- * TODO update to current version
  */
 class TrimmingParser extends DelegateParser
 {
     /**
      * @var Parser
      */
-    protected $_trimmer;
+    protected $_left;
+
+    /**
+     * @var Parser
+     */
+    protected $_right;
 
     /**
      * @param Parser $parser
      * @param Parser $trimmer
      */
-    public function __construct(Parser $parser, Parser $trimmer)
+    public function __construct(Parser $parser, Parser $left, Parser $right)
     {
         parent::__construct($parser);
 
-        $this->_trimmer = $trimmer;
+        $this->_left = $left;
+        $this->_right = $right;
     }
 
     /**
@@ -36,7 +40,7 @@ class TrimmingParser extends DelegateParser
         $current = $context;
 
         do {
-            $current = $this->_trimmer->parseOn($current);
+            $current = $this->_left->parseOn($current);
         } while ($current->isSuccess);
 
         $result = $this->_delegate->parseOn($current);
@@ -48,7 +52,7 @@ class TrimmingParser extends DelegateParser
         $current = $result;
 
         do {
-            $current = $this->_trimmer->parseOn($current);
+            $current = $this->_right->parseOn($current);
         } while ($current->isSuccess);
 
         return $current->success($result->value);
@@ -59,7 +63,7 @@ class TrimmingParser extends DelegateParser
      */
     public function copy()
     {
-        return new TrimmingParser($this->_delegate, $this->_trimmer);
+        return new TrimmingParser($this->_delegate, $this->_left, $this->_right);
     }
 
     /**
@@ -68,7 +72,7 @@ class TrimmingParser extends DelegateParser
      */
     protected function get_children()
     {
-        return array($this->_delegate, $this->_trimmer);
+        return array($this->_delegate, $this->_left, $this->_right);
     }
 
     /**
@@ -79,8 +83,12 @@ class TrimmingParser extends DelegateParser
     {
         parent::replace($source, $target);
 
-        if ($this->_trimmer === $source) {
-            $this->_trimmer = $target;
+        if ($this->_left === $source) {
+            $this->_left = $target;
+        }
+
+        if ($this->_right === $source) {
+            $this->_right = $target;
         }
     }
 }
