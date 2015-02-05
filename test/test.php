@@ -11,6 +11,8 @@ require __DIR__ . '/header.php';
 
 header('Content-type: text/plain');
 
+mb_internal_encoding('UTF-8'); // this test-suite assumes UTF-8 encoding
+
 $enable_coverage = false; // set to false to speed up test
 
 if ($enable_coverage && coverage()) {
@@ -1018,8 +1020,8 @@ group(
             'accept()',
             function () {
                 $parser = char('a');
-                check($parser->accept(Buffer::fromUTF8('a')), true);
-                check($parser->accept(Buffer::fromUTF8('b')), false);
+                check($parser->accept(Buffer::create('a')), true);
+                check($parser->accept(Buffer::create('b')), false);
             }
         );
 
@@ -1027,7 +1029,7 @@ group(
             'matches()',
             function () {
                 $parser = digit()->seq(digit())->flatten();
-                check($parser->matches(Buffer::fromUTF8('a123b45')), array('12', '23', '45'));
+                check($parser->matches(Buffer::create('a123b45')), array('12', '23', '45'));
             }
         );
 
@@ -1035,7 +1037,7 @@ group(
             'matchesSkipping()',
             function () {
                 $parser = digit()->seq(digit())->flatten();
-                check($parser->matchesSkipping(Buffer::fromUTF8('a123b45')), array('12', '45'));
+                check($parser->matchesSkipping(Buffer::create('a123b45')), array('12', '45'));
             }
         );
     }
@@ -1485,10 +1487,10 @@ group(
                     $self->def('start', $self->ref('loop')->or_(char('b')));
                     $self->def('loop', char('a')->seq($self->ref('start')));
                 });
-                check($parser->accept(Buffer::fromUTF8('b')), true);
-                check($parser->accept(Buffer::fromUTF8('ab')), true);
-                check($parser->accept(Buffer::fromUTF8('aab')), true);
-                check($parser->accept(Buffer::fromUTF8('aaab')), true);
+                check($parser->accept(Buffer::create('b')), true);
+                check($parser->accept(Buffer::create('ab')), true);
+                check($parser->accept(Buffer::create('aab')), true);
+                check($parser->accept(Buffer::create('aaab')), true);
             }
         );
 
@@ -1673,15 +1675,15 @@ group(
                             ->seq(char(')')->trim())
                     );
                 });
-                check($parser->accept(Buffer::fromUTF8('x')), true);
-                check($parser->accept(Buffer::fromUTF8('xy')), true);
-                check($parser->accept(Buffer::fromUTF8('x12')), true);
-                check($parser->accept(Buffer::fromUTF8("\\x.y")), true);
-                check($parser->accept(Buffer::fromUTF8("\\x.\\y.z")), true);
-                check($parser->accept(Buffer::fromUTF8('(x x)')), true);
-                check($parser->accept(Buffer::fromUTF8('(x y)')), true);
-                check($parser->accept(Buffer::fromUTF8('(x (y z))')), true);
-                check($parser->accept(Buffer::fromUTF8('((x y) z)')), true);
+                check($parser->accept(Buffer::create('x')), true);
+                check($parser->accept(Buffer::create('xy')), true);
+                check($parser->accept(Buffer::create('x12')), true);
+                check($parser->accept(Buffer::create("\\x.y")), true);
+                check($parser->accept(Buffer::create("\\x.\\y.z")), true);
+                check($parser->accept(Buffer::create('(x x)')), true);
+                check($parser->accept(Buffer::create('(x y)')), true);
+                check($parser->accept(Buffer::create('(x (y z))')), true);
+                check($parser->accept(Buffer::create('((x y) z)')), true);
             }
         );
 
@@ -1734,22 +1736,22 @@ group(
                             ->seq(char(')')->trim())
                     );
                 });
-                check($parser->accept(Buffer::fromISO('1')), true);
-                check($parser->accept(Buffer::fromISO('12')), true);
-                check($parser->accept(Buffer::fromISO('1.23')), true);
-                check($parser->accept(Buffer::fromISO('-12.3')), true);
-                check($parser->accept(Buffer::fromISO('1 + 2')), true);
-                check($parser->accept(Buffer::fromISO('1 + 2 + 3')), true);
-                check($parser->accept(Buffer::fromISO('1 - 2')), true);
-                check($parser->accept(Buffer::fromISO('1 - 2 - 3')), true);
-                check($parser->accept(Buffer::fromISO('1 * 2')), true);
-                check($parser->accept(Buffer::fromISO('1 * 2 * 3')), true);
-                check($parser->accept(Buffer::fromISO('1 / 2')), true);
-                check($parser->accept(Buffer::fromISO('1 / 2 / 3')), true);
-                check($parser->accept(Buffer::fromISO('1 ^ 2')), true);
-                check($parser->accept(Buffer::fromISO('1 ^ 2 ^ 3')), true);
-                check($parser->accept(Buffer::fromISO('1 + (2 * 3)')), true);
-                check($parser->accept(Buffer::fromISO('(1 + 2) * 3')), true);
+                check($parser->accept(Buffer::create('1')), true);
+                check($parser->accept(Buffer::create('12')), true);
+                check($parser->accept(Buffer::create('1.23')), true);
+                check($parser->accept(Buffer::create('-12.3')), true);
+                check($parser->accept(Buffer::create('1 + 2')), true);
+                check($parser->accept(Buffer::create('1 + 2 + 3')), true);
+                check($parser->accept(Buffer::create('1 - 2')), true);
+                check($parser->accept(Buffer::create('1 - 2 - 3')), true);
+                check($parser->accept(Buffer::create('1 * 2')), true);
+                check($parser->accept(Buffer::create('1 * 2 * 3')), true);
+                check($parser->accept(Buffer::create('1 / 2')), true);
+                check($parser->accept(Buffer::create('1 / 2 / 3')), true);
+                check($parser->accept(Buffer::create('1 ^ 2')), true);
+                check($parser->accept(Buffer::create('1 ^ 2 ^ 3')), true);
+                check($parser->accept(Buffer::create('1 + (2 * 3)')), true);
+                check($parser->accept(Buffer::create('(1 + 2) * 3')), true);
             }
         );
     }
@@ -2062,8 +2064,8 @@ group(
 
                 check($id3->message, 'letter expected');
                 check($id3->position, 0);
-                check($id->accept(Buffer::fromISO('foo')), true);
-                check($id->accept(Buffer::fromISO('123')), false);
+                check($id->accept(Buffer::create('foo')), true);
+                check($id->accept(Buffer::create('123')), false);
             }
         );
 
@@ -2071,7 +2073,7 @@ group(
             'different parsers',
             function () {
                 $id = letter()->seq(word()->star())->flatten();
-                $matches = $id->matchesSkipping(Buffer::fromISO('foo 123 bar4'));
+                $matches = $id->matchesSkipping(Buffer::create('foo 123 bar4'));
 
                 check($matches, array('foo', 'bar4'));
             }
@@ -2147,6 +2149,27 @@ group(
     'php',
     function () {
         test(
+            'Buffer defaults to internal encoding',
+            function () {
+                $encoding = mb_internal_encoding();
+
+                mb_internal_encoding('ISO-8859-1');
+
+                $iso_buffer = Buffer::create('');
+
+                check($iso_buffer->encoding, 'ISO-8859-1');
+
+                mb_internal_encoding('UTF-8');
+
+                $utf8_buffer = Buffer::create('');
+
+                check($utf8_buffer->encoding, 'UTF-8');
+
+                mb_internal_encoding($encoding);
+            }
+        );
+
+        test(
             'ISO string buffer',
             function () {
                 $str = "\xC2\xA1Hola!"; // 7 bytes
@@ -2166,7 +2189,7 @@ group(
         );
 
         test(
-            'utf-8 string buffer',
+            'UTF-8 string buffer',
             function () {
                 $pi = "\xCF\x80"; // UTF-8 greek Pi http://www.fileformat.info/info/unicode/char/03c0/index.htm
                 $str = "\xC2\xA1Hola{$pi}"; // 8 bytes (6 characters in UTF-8)
@@ -2190,7 +2213,7 @@ group(
             function () {
                 $str = "\xCF\x802345678";
 
-                $buffer = Buffer::fromUTF8($str);
+                $buffer = Buffer::create($str);
 
                 check($buffer->slice(0)->string, $str);
                 check($buffer->slice(1)->string, "2345678");
@@ -2222,7 +2245,7 @@ group(
         test(
             'memory',
             function () {
-                $buffer = Buffer::fromISO(str_repeat('0123456789', 1024)); // 10KB per buffer
+                $buffer = Buffer::create(str_repeat('0123456789', 1024)); // 10KB per buffer
 
                 $baseline = memory_get_usage();
 

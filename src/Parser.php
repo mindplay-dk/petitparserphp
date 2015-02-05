@@ -44,13 +44,23 @@ abstract class Parser extends Accessors
      * [Failure], where [Result.position] is [:0:] and [Failure.message] is
      * ['letter expected'].
      *
-     * @param Buffer|string $input
+     * Note that, if a string is given, the input is assumed to be in the current PHP internal
+     * character encoding, e.g. as defined by {@link mb_internal_encoding()} - if this is not
+     * the case (such as when parsing the contents of a file with a known encoding), either
+     * call {@link Buffer::create()} explicitly indicating the encoding, or use one of the
+     * two convenience methods {@link parseUTF8()} or {@link parseISO()}.
+     *
+     * @param Buffer|string $input input Buffer or string (see notes about strings above)
      *
      * @return Result
+     *
+     * @see mb_internal_encoding()
+     * @see parseUTF8()
+     * @see parseISO()
      */
     public function parse($input)
     {
-        return $this->parseOn(new Context(is_string($input) ? Buffer::fromUTF8($input) : $input, 0));
+        return $this->parseOn(new Context(is_string($input) ? Buffer::create($input) : $input, 0));
     }
 
     /**

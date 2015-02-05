@@ -174,7 +174,7 @@ function pattern($element, $message = null)
     }
 
     return new CharacterParser(
-        $patternParser->parseISO($element)->value,
+        $patternParser->parse($element)->value,
         $message ?: "[{$element}] expected");
 }
 

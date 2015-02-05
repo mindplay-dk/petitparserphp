@@ -181,7 +181,7 @@ function throws($exception_type, $why, $function)
  */
 function expectSuccess(Parser $parser, $input, $expected, $position = null)
 {
-    $buffer = Buffer::fromUTF8($input);
+    $buffer = Buffer::create($input);
 
     $result = $parser->parse($buffer);
 
@@ -204,7 +204,7 @@ function expectSuccess(Parser $parser, $input, $expected, $position = null)
  */
 function expectFailure(Parser $parser, $input, $position = 0, $message = null)
 {
-    $buffer = Buffer::fromUTF8($input);
+    $buffer = Buffer::create($input);
 
     $result = $parser->parse($buffer);
 

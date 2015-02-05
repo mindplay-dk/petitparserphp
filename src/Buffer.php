@@ -40,27 +40,39 @@ class Buffer extends Accessors
     protected $_end;
 
     /**
-     * @param string &$string reference to UTF-32 encoded string
-     * @param string ^$encoding source character encoding
+     * @param string $string reference to UTF-32 encoded string
+     * @param string $encoding source character encoding
      * @param int $start buffer start in characters (inclusive)
      * @param int $end buffer end in characters (exclusive)
      */
-    protected function __construct($string, &$encoding, $start, $end)
+    protected function __construct($string, $encoding, $start, $end)
     {
         $this->_string = $string;
+        $this->_encoding = $encoding;
         $this->_start = $start;
         $this->_end = $end;
-        $this->_encoding = $encoding;
     }
 
     /**
+     * Create a new Buffer instance from a string in a specified character encoding.
+     *
+     * If no encoding is specified, PHP's internal encoding is used by default, e.g.
+     * the encoding returned by {@link mb_convert_encoding()}
+     *
      * @param string $string source string in the specified encoding
-     * @param string $encoding source character encoding
+     * @param string|null $encoding source character encoding (or NULL to use PHP's internal encoding)
      *
      * @return Buffer
+     *
+     * @see fromISO()
+     * @see fromUTF8()
      */
-    protected static function create($string, $encoding)
+    public static function create($string, $encoding = null)
     {
+        if ($encoding === null) {
+            $encoding = mb_internal_encoding();
+        }
+
         $string = mb_convert_encoding($string, 'UTF-32', $encoding);
 
         return new Buffer(
@@ -75,6 +87,9 @@ class Buffer extends Accessors
      * @param string $string latin-1 8-bit string
      *
      * @return Buffer
+     *
+     * @see create()
+     * @see fromUTF8()
      */
     public static function fromISO($string)
     {
@@ -85,6 +100,9 @@ class Buffer extends Accessors
      * @param string $string UTF-8 encoded string
      *
      * @return Buffer
+     *
+     * @see create()
+     * @see fromISO()
      */
     public static function fromUTF8($string)
     {
