@@ -1170,6 +1170,91 @@ group(
 );
 
 group(
+    'context',
+    function () {
+        $input = "a\nc";
+        $context = new Context(Buffer::create($input), 0);
+
+        test(
+            'context',
+            function () use ($context, $input) {
+                check($context->buffer->string, $input);
+                check($context->position, 0);
+                check($context->__toString(), 'Context[1:1]');
+            }
+        );
+
+        test(
+            'success',
+            function () use ($context, $input) {
+                $success = $context->success('result');
+                check($success->buffer->string, $input);
+                check($success->position, 0);
+                check($success->value, 'result');
+                check($success->message, null);
+                check($success->isSuccess, true);
+                check($success->isFailure, false);
+                check($success->__toString(), 'Success[1:1]: result');
+            }
+        );
+
+        test(
+            'success with position',
+            function () use ($context, $input) {
+                $success = $context->success('result', 2);
+                check($success->buffer->string, $input);
+                check($success->position, 2);
+                check($success->value, 'result');
+                check($success->message, null);
+                check($success->isSuccess, true);
+                check($success->isFailure, false);
+                check($success->__toString(), 'Success[2:1]: result');
+            }
+        );
+
+        test(
+            'failure',
+            function () use ($context, $input) {
+                $failure = $context->failure('error');
+                check($failure->buffer->string, $input);
+                check($failure->position, 0);
+                try {
+                    $failure->value;
+                    ok(false, 'Expected ParserError to be thrown');
+                } catch (ParserError $error) {
+                    check($error->failure, $failure);
+                    check($error->__toString(), 'error at 1:1');
+                }
+                check($failure->message, 'error');
+                check($failure->isSuccess, false);
+                check($failure->isFailure, true);
+                check($failure->__toString(), 'Failure[1:1]: error');
+            }
+        );
+
+        test(
+            'failure with position',
+            function () use ($context, $input) {
+                $failure = $context->failure('error', 2);
+                check($failure->buffer->string, $input);
+                check($failure->position, 2);
+                try {
+                    $failure->value;
+                    ok(false, 'Expected ParserError to be thrown');
+                } catch (ParserError $error) {
+                    check($error->failure, $failure);
+                    check($error->__toString(), 'error at 2:1');
+                }
+                check($failure->message, 'error');
+                check($failure->isSuccess, false);
+                check($failure->isFailure, true);
+                check($failure->__toString(), 'Failure[2:1]: error');
+            }
+        );
+    }
+);
+
+group(
     'parsing',
     function () {
         test(

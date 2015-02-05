@@ -2,8 +2,12 @@
 
 namespace petitparser;
 
+use RuntimeException;
+
 /**
  * An exception raised in case of a parse error.
+ *
+ * @property-read Failure $failure
  */
 class ParserError extends Error
 {
@@ -20,6 +24,18 @@ class ParserError extends Error
         $this->_failure = $failure;
 
         parent::__construct($this->__toString());
+    }
+
+    /**
+     * @ignore
+     */
+    public function __get($name)
+    {
+        if ($name === 'failure') {
+            return $this->_failure;
+        } else {
+            throw new RuntimeException("undefined property {$name}");
+        }
     }
 
     /**
