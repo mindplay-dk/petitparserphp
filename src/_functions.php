@@ -45,8 +45,8 @@ function toCharCode($element)
         return $element;
     }
 
-    if (is_string($element)) {
-        $element = mb_convert_encoding($element, 'UTF-32', 'UTF-8'); // TODO QA
+    if (is_string($element) && mb_strlen($element) === 1) {
+        $element = mb_convert_encoding($element, 'UTF-32');
 
         if (PHP_INT_SIZE <= 4) {
             list(, $h, $l) = unpack('n*', $element);
@@ -333,6 +333,109 @@ function anyIn($elements, $message = null)
         },
         $message ? : 'any of ' . implode(', ', $elements) . ' expected'
     );
+}
+
+/**
+ * Returns a parser that accepts any of the specified characters.
+ *
+ * @param string $string
+ * @param string $message
+ *
+ * @return Parser
+ */
+function anyOf($string, $message = null)
+{
+    return new CharacterParser(_optimizedString($string), $message ?: "any of \"{$string}\" expected");
+}
+
+/**
+ * Returns a parser that accepts none of the specified characters.
+ *
+ * @param string $string
+ * @param string $message
+ *
+ * @return Parser
+ */
+function noneOf($string, $message = null)
+{
+    return new CharacterParser(
+        new NotCharacterPredicate(_optimizedString($string)),
+        $message ?: "none of \"{$string}\" expected");
+}
+
+/**
+ * @param string $string
+ *
+ * @return CharacterPredicate
+ */
+function _optimizedString($string)
+{
+    $ranges = array();
+
+    $buffer = Buffer::create($string);
+
+    for ($offset=0; $offset<$buffer->length; $offset++) {
+        $value = $buffer->charCodeAt($offset);
+
+        $ranges[] = new RangeCharacterPredicate($value, $value);
+    }
+
+    return _optimizedRanges($ranges);
+}
+
+/**
+ * @param RangeCharacterPredicate[] $ranges
+ *
+ * @return CharacterPredicate
+ */
+function _optimizedRanges($ranges)
+{
+    // 1. sort the ranges:
+
+    $sortedRanges = $ranges;
+
+    usort($sortedRanges, function ($first, $second) {
+        return $first->start != $second->start
+            ? $first->start - $second->start
+            : $first->stop - $second->stop;
+    });
+
+    // 2. merge adjacent or overlapping ranges:
+
+    $mergedRanges = array();
+
+    foreach ($sortedRanges as $thisRange) {
+        if (count($mergedRanges) === 0) {
+            $mergedRanges[] = $thisRange;
+        } else {
+            $lastRange = $mergedRanges[count($mergedRanges) - 1];
+
+            if ($lastRange->stop + 1 >= $thisRange->start) {
+                $characterRange = new RangeCharacterPredicate($lastRange->start, $thisRange->stop);
+                $mergedRanges[count($mergedRanges) - 1] = $characterRange;
+            } else {
+                $mergedRanges[] = $thisRange;
+            }
+        }
+    }
+
+    // 3. build the best resulting predicates:
+
+    if (count($mergedRanges) === 1) {
+        return $mergedRanges[0]->start === $mergedRanges[0]->stop
+            ? new SingleCharacterPredicate($mergedRanges[0]->start)
+            : $mergedRanges[0];
+    } else {
+        return new RangesCharacterPredicate(
+            count($mergedRanges),
+            array_map(function (RangeCharacterPredicate $range) {
+                return $range->start;
+            }, $mergedRanges),
+            array_map(function (RangeCharacterPredicate $range) {
+                return $range->stop;
+            }, $mergedRanges)
+        );
+    }
 }
 
 /**

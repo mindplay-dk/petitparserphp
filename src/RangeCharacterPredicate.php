@@ -9,12 +9,12 @@ class RangeCharacterPredicate extends CharacterPredicate
     /**
      * @var int
      */
-    protected $_start;
+    public $start;
 
     /**
      * @var int
      */
-    protected $_stop;
+    public $stop;
 
     /**
      * @param int $start
@@ -22,8 +22,8 @@ class RangeCharacterPredicate extends CharacterPredicate
      */
     public function __construct($start, $stop)
     {
-        $this->_start = toCharCode($start);
-        $this->_stop = toCharCode($stop);
+        $this->start = toCharCode($start);
+        $this->stop = toCharCode($stop);
     }
 
     /**
@@ -33,7 +33,7 @@ class RangeCharacterPredicate extends CharacterPredicate
      */
     public function test($value)
     {
-        return $value >= $this->_start
-            && $value <= $this->_stop;
+        return $value >= $this->start
+            && $value <= $this->stop;
     }
 }

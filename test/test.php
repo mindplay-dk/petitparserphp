@@ -650,6 +650,63 @@ group(
         );
 
         test(
+            'char() with number',
+            function () {
+                $parser = char(97, 'lowercase a');
+                expectSuccess($parser, 'a', 'a');
+                expectFailure($parser, 'b', 0, 'lowercase a');
+                expectFailure($parser, '');
+            }
+        );
+
+        test(
+            'char() invalid',
+            function () {
+                throws(
+                    'InvalidArgumentException',
+                    'must be a single character or integer code point',
+                    function () {
+                        char('ab');
+                    }
+                );
+            }
+        );
+
+        test(
+            'anyOf()',
+            function () {
+                $parser = anyOf('uncopyrightable');
+                expectSuccess($parser, 'c', 'c');
+                expectSuccess($parser, 'g', 'g');
+                expectSuccess($parser, 'h', 'h');
+                expectSuccess($parser, 'i', 'i');
+                expectSuccess($parser, 'o', 'o');
+                expectSuccess($parser, 'p', 'p');
+                expectSuccess($parser, 'r', 'r');
+                expectSuccess($parser, 't', 't');
+                expectSuccess($parser, 'y', 'y');
+                expectFailure($parser, 'x', 0, 'any of "uncopyrightable" expected');
+            }
+        );
+
+        test(
+            'noneOf()',
+            function () {
+                $parser = noneOf('uncopyrightable');
+                expectSuccess($parser, 'x', 'x');
+                expectFailure($parser, 'c', 0, 'none of "uncopyrightable" expected');
+                expectFailure($parser, 'g', 0, 'none of "uncopyrightable" expected');
+                expectFailure($parser, 'h', 0, 'none of "uncopyrightable" expected');
+                expectFailure($parser, 'i', 0, 'none of "uncopyrightable" expected');
+                expectFailure($parser, 'o', 0, 'none of "uncopyrightable" expected');
+                expectFailure($parser, 'p', 0, 'none of "uncopyrightable" expected');
+                expectFailure($parser, 'r', 0, 'none of "uncopyrightable" expected');
+                expectFailure($parser, 't', 0, 'none of "uncopyrightable" expected');
+                expectFailure($parser, 'y', 0, 'none of "uncopyrightable" expected');
+            }
+        );
+
+        test(
             'digit()',
             function () {
                 $parser = digit();
