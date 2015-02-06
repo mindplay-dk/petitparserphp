@@ -1676,9 +1676,11 @@ group(
                     );
                 };
 
+                $verify('any()', any());
                 $verify('and()', digit()->and_());
                 $verify('char()', char('a'));
                 $verify('digit()', digit());
+                $verify('delegate()', new DelegateParser(any()));
                 $verify('end()', digit()->end_());
                 $verify('epsilon()', epsilon());
                 $verify('failure()', failure());
@@ -1701,7 +1703,7 @@ group(
                 $verify('repeatGreedy()', digit()->repeatGreedy(word(), 2, 3));
                 $verify('repeatLazy()', digit()->repeatLazy(word(), 2, 3));
                 $verify('seq()', digit()->seq(word()));
-                $verify('setable()', digit()->settable());
+                $verify('settable()', digit()->settable());
                 $verify('star()', digit()->star());
                 $verify('starGreedy()', digit()->starGreedy(word()));
                 $verify('starLazy()', digit()->starLazy(word()));
