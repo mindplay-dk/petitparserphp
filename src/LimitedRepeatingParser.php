@@ -49,17 +49,4 @@ abstract class LimitedRepeatingParser extends RepeatingParser
             $this->_limit = $target;
         }
     }
-
-    /**
-     * @param Parser $other
-     * @param Parser[] $seen
-     *
-     * @return bool
-     */
-    public function isEqualTo(Parser $other, $seen = array())
-    {
-        return parent::isEqualTo($other, $seen)
-            && $other instanceof self
-            && $this->_limit === $other->_limit;
-    }
 }

@@ -502,9 +502,9 @@ abstract class Parser extends Accessors
      * Returns a parser that points to the receiver, but can be changed to point
      * to something else at a later point in time.
      *
-     * For example, the parser [:letter().setable():] behaves exactly the same
+     * For example, the parser [:letter().settable():] behaves exactly the same
      * as [:letter():], but it can be replaced with another parser using
-     * [SetableParser.set].
+     * [SettableParser.set].
      *
      * @return SettableParser
      */
@@ -649,12 +649,8 @@ abstract class Parser extends Accessors
      */
     public function isEqualTo(Parser $other, $seen = array())
     {
-        if ($seen === null) {
-          $seen = array();
-        }
-
         if ($this === $other || in_array($this, $seen, true)) {
-          return true;
+            return true;
         }
 
         $seen[] = $this;
@@ -687,7 +683,7 @@ abstract class Parser extends Accessors
      *
      * @return bool
      */
-    protected function hasEqualChildren(Parser $other, $seen = array())
+    public function hasEqualChildren(Parser $other, $seen = array())
     {
         $thisChildren = $this->children;
         $otherChildren = $other->children;

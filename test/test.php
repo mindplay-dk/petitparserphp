@@ -623,7 +623,7 @@ group(
         );
 
         test(
-            'setable()',
+            'settable()',
             function () {
                 $parser = char('a')->settable();
                 expectSuccess($parser, 'a', 'a');
@@ -1620,7 +1620,7 @@ group(
             'double',
             function () {
                 $source = lowercase();
-                $input = $source->and_($source);
+                $input = $source->seq($source);
                 $target = uppercase();
                 $output = transformParser(
                     $input,
@@ -1630,7 +1630,7 @@ group(
                 );
                 ok($input !== $output);
                 ok(! $input->isEqualTo($output));
-                ok($input->isEqualTo($source->and_($source)));
+                ok($input->isEqualTo($source->seq($source)));
                 check($input->children[0], $input->children[count($input->children)-1]);
             }
         );
@@ -1710,7 +1710,7 @@ group(
         );
 
         test(
-            'remove setables',
+            'remove settables',
             function () {
                 $input = lowercase()->settable();
                 $output = removeSettables($input);
@@ -1719,7 +1719,7 @@ group(
         );
 
         test(
-            'remove nested setables',
+            'remove nested settables',
             function () {
                 $input = lowercase()->settable()->star();
                 $output = removeSettables($input);
@@ -1728,7 +1728,7 @@ group(
         );
 
         test(
-            'remove double setables',
+            'remove double settables',
             function () {
                 $input = lowercase()->settable()->settable();
                 $output = removeSettables($input);
@@ -2471,6 +2471,49 @@ group(
                     $self->action('element', 'intval');
                 });
                 check(array(1, 23, 456), $parser->parse('1,23,456')->value);
+            }
+        );
+    }
+);
+
+group(
+    'optimize',
+    function () {
+        test(
+            'remove settables',
+            function () {
+                $input = lowercase()->settable();
+                $output = removeSettables($input);
+                ok($output->isEqualTo(lowercase()));
+            }
+        );
+
+        test(
+            'remove nested settables',
+            function () {
+                $input = lowercase()->settable()->star();
+                $output = removeSettables($input);
+                ok($output->isEqualTo(lowercase()->star()));
+            }
+        );
+
+        test(
+            'remove double settables',
+            function () {
+                $input = lowercase()->settable()->settable();
+                $output = removeSettables($input);
+                ok($output->isEqualTo(lowercase()));
+            }
+        );
+
+        test(
+            'remove duplicate',
+            function () {
+                $input = lowercase()->seq(lowercase());
+                $output = removeDuplicates($input);
+                ok($input->isEqualTo($output));
+                ok($input->children[0] !== $input->children[count($input->children)-1]);
+                check($output->children[0], $output->children[count($output->children)-1]);
             }
         );
     }

@@ -2,6 +2,9 @@
 
 namespace petitparser;
 
+/**
+ * A parser that consumes nothing and fails.
+ */
 class FailureParser extends Parser
 {
     /**

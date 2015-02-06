@@ -35,15 +35,9 @@ abstract class RepeatingParser extends DelegateParser
         return parent::__toString() . '[' . $this->_min . '..' . $this->_max . ']';
     }
 
-    /**
-     * @param Parser $other
-     * @param Parser[] $seen
-     *
-     * @return bool
-     */
-    public function isEqualTo(Parser $other, $seen = array())
+    public function hasEqualProperties(Parser $other)
     {
-        return parent::isEqualTo($other, $seen)
+        return parent::hasEqualProperties($other)
             && $other instanceof self
             && $this->_min === $other->_min
             && $this->_max === $other->_max;

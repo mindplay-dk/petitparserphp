@@ -2,6 +2,7 @@
 
 namespace petitparser;
 
+use Closure;
 use InvalidArgumentException;
 use RuntimeException;
 
@@ -526,69 +527,70 @@ function predicate($length, $predicate, $message)
  *
  * @return ParserIterable|Parser[]
  */
-function allParser($root)
+function allParser(Parser $root)
 {
     return new ParserIterable($root);
 }
 
 /**
- * Transforms all parsers reachable from [root] with the given [function].
+ * Transforms all parsers reachable from [parser] with the given [handler].
  * The identity function returns a copy of the the incoming parser.
  *
  * The implementation first creates a copy of each parser reachable in the
- * input grammar; then the resulting grammar is iteratively transfered and
- * all old parsers are replaced with the transformed ones until we end up
- * with a completely new grammar.
+ * input grammar; then the resulting grammar is traversed until all references
+ * to old parsers are replaced with the transformed ones.
  *
- * @param Parser $root
- * @param callable $function
+ * @param Parser $parser
+ * @param Closure $handler function (Parser $parser): Parser
  *
  * @return Parser
  */
-function transformParser(Parser $root, $function)
+function transformParser(Parser $parser, Closure $handler)
 {
     $mapping = array();
 
-    foreach (allParser($root) as $parser) {
-        $mapping[spl_object_hash($parser)] = call_user_func($function, $parser->copy());
+    foreach (allParser($parser) as $each) {
+        $mapping[spl_object_hash($each)] = $handler($each->copy());
     }
 
-    do {
-        $changed = false;
+    $seen = array_values($mapping);
+    $todo = array_values($mapping);
 
-        foreach (allParser($mapping[spl_object_hash($root)]) as $parser) {
-            foreach ($parser->children as $source) {
-                if (isset($mapping[spl_object_hash($source)])) {
-                    $parser->replace($source, $mapping[spl_object_hash($source)]);
-                    $changed = true;
-                }
+    while (count($todo)) {
+        /** @var Parser $parent */
+        $parent = array_pop($todo);
+
+        foreach ($parent->children as $child) {
+            if (isset($mapping[spl_object_hash($child)])) {
+                $parent->replace($child, $mapping[spl_object_hash($child)]);
+            } else if (! in_array($child, $seen, true)) {
+                $seen[] = $child;
+                $todo[] = $child;
             }
         }
-    } while ($changed === false);
+    }
 
-    return $mapping[spl_object_hash($root)];
+    return $mapping[spl_object_hash($parser)];
 }
 
 /**
- * Removes all setable parsers reachable from [root] in-place.
+ * Returns a copy of the given Parser with all settable parsers removed.
  *
- * @param Parser $root
+ * @param Parser $parser
  *
  * @return Parser
  */
-function removeSettables(Parser $root)
+function removeSettables(Parser $parser)
 {
-    foreach (allParser($root) as $parent) {
-        foreach ($parent->children as $source) {
-            $target = _removeSettable($source);
-
-            if ($source !== $target) {
-                $parent->replace($source, $target);
+    return transformParser(
+        $parser,
+        function (Parser $each) {
+            while ($each instanceof SettableParser) {
+                $each = $each->children[0];
             }
+            return $each;
         }
-    }
-
-    return _removeSettable($root);
+    );
 }
 
 /**
@@ -596,37 +598,34 @@ function removeSettables(Parser $root)
  *
  * @return Parser
  */
-function _removeSettable(Parser $parser)
+function removeDuplicates(Parser $parser)
 {
-    while ($parser instanceof SettableParser) {
-        $parser = $parser->children[0];
-    }
+    $uniques = array();
 
-    return $parser;
+    return transformParser(
+        $parser,
+        function (Parser $source) use (&$uniques) {
+            foreach ($uniques as $each) {
+                if ($source !== $each && $source->isEqualTo($each)) {
+                    $target = $each;
+                    break;
+                }
+            }
+
+            if (! isset($target)) {
+                if (! in_array($source, $uniques, true)) {
+                    $uniques[] = $source;
+                }
+                return $source;
+            } else {
+                return $target;
+            }
+        }
+    );
 }
 
 // TODO implement these functions
 
-///**
-// * Removes duplicated parsers reachable from [root] in-place.
-// */
-//Parser removeDuplicates(Parser root) {
-//  var uniques = new Set();
-//  allParser(root).forEach((parent) {
-//    parent.children.forEach((source) {
-//      var target = uniques.firstWhere((each) {
-//        return source != each && source.equals(each);
-//      }, orElse: () => null);
-//      if (target == null) {
-//        uniques.add(source);
-//      } else {
-//        parent.replace(source, target);
-//      }
-//    });
-//  });
-//  return root;
-//}
-//
 ///**
 // * Adds debug handlers to each parser reachable from [root].
 // */
