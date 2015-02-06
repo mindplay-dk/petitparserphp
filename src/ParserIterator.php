@@ -7,9 +7,9 @@ use Iterator;
 class ParserIterator implements Iterator
 {
     /**
-     * @var Parser
+     * @var Parser[]
      */
-    protected $_root;
+    protected $_roots;
 
     /**
      * @var Parser[]
@@ -19,7 +19,7 @@ class ParserIterator implements Iterator
     /**
      * @var Parser[]
      */
-    protected $_done;
+    protected $_seen;
 
     /**
      * @var Parser
@@ -37,20 +37,20 @@ class ParserIterator implements Iterator
     protected $_valid;
 
     /**
-     * @param Parser $root
+     * @param Parser[] $roots
      */
-    public function __construct(Parser $root)
+    public function __construct(array $roots)
     {
-        $this->_root = $root;
+        $this->_roots = $roots;
     }
 
     /**
-     * @param Parser $root
+     * @param Parser[] $roots
      */
-    protected function _init(Parser $root)
+    protected function _init(array $roots)
     {
-        $this->_todo = array($root);
-        $this->_done = array();
+        $this->_todo = $roots;
+        $this->_seen = $roots;
         $this->_current = null;
         $this->_index = 0;
         $this->_valid = $this->_moveNext();
@@ -61,19 +61,19 @@ class ParserIterator implements Iterator
      */
     protected function _moveNext()
     {
-        do {
-            if (count($this->_todo) === 0) {
-                $this->_current = null;
-                return false;
+        if (count($this->_todo) === 0) {
+            $this->_current = null;
+
+            return false;
+        }
+
+        $this->_current = array_pop($this->_todo);
+
+        foreach ($this->_current->children as $parser) {
+            if (! in_array($parser, $this->_seen)) {
+                $this->_todo[] = $parser;
+                $this->_seen[] = $parser;
             }
-
-            $this->_current = array_pop($this->_todo);
-        } while (in_array($this->_current, $this->_done, true));
-
-        $this->_done[] = $this->_current;
-
-        foreach ($this->_current->children as $child) {
-            $this->_todo[] = $child;
         }
 
         return true;
@@ -85,7 +85,7 @@ class ParserIterator implements Iterator
      */
     public function rewind()
     {
-        $this->_init($this->_root);
+        $this->_init($this->_roots);
     }
 
     /**

@@ -21,6 +21,8 @@ Status and scope of this port
 
 - Actual grammars and parsers (XML, Dart, Lisp, etc.) have not been ported, and isn't planned.
 
+- "definition.dart" cannot be directly ported due to different language mechanics.
+
 - The port is up-to-date with the following version of PetitParserDart:
 
   https://github.com/renggli/PetitParserDart/commit/626f2c95c8157d8e80ef101b5c80cf6b7beef183
@@ -28,19 +30,6 @@ Status and scope of this port
 - Work in progress targeting the following version:
 
   https://github.com/renggli/PetitParserDart/commit/3ba18393343977780a155277310dddfa2c3caa4d
-
-  TODO:
-
-    * GrammarDefinition
-    * clear inline TODO items
-    * update/port diagnostic/debugging tools
-    * iterable.dart
-    * optimize.dart
-    * transform.dart
-    * test.dart
-    * core_test.dart
-    * debug_test.dart
-    * reflection_test.dart
 
 
 Contributions

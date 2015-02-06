@@ -576,11 +576,11 @@ function transformParser(Parser $root, $function)
  *
  * @return Parser
  */
-function removeSetables(Parser $root)
+function removeSettables(Parser $root)
 {
     foreach (allParser($root) as $parent) {
         foreach ($parent->children as $source) {
-            $target = _removeSetable($source);
+            $target = _removeSettable($source);
 
             if ($source !== $target) {
                 $parent->replace($source, $target);
@@ -588,7 +588,7 @@ function removeSetables(Parser $root)
         }
     }
 
-    return _removeSetable($root);
+    return _removeSettable($root);
 }
 
 /**
@@ -596,7 +596,7 @@ function removeSetables(Parser $root)
  *
  * @return Parser
  */
-function _removeSetable(Parser $parser)
+function _removeSettable(Parser $parser)
 {
     while ($parser instanceof SettableParser) {
         $parser = $parser->children[0];

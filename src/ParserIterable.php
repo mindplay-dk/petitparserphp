@@ -24,6 +24,6 @@ class ParserIterable implements IteratorAggregate
      */
     public function getIterator()
     {
-        return new ParserIterator($this->_root);
+        return new ParserIterator(array($this->_root));
     }
 }
