@@ -400,12 +400,11 @@ group(
             }
         );
 
-        // TODO debug this test - goes into an infinite loop
-//        test('repeatLazy() unbounded', function() {
-//          $input = array_fill(0, 100000, 'a');
-//          $parser = word()->repeatLazy(digit(), 2, Parser::UNBOUNDED);
-//          expectSuccess($parser, implode($input) . '1111', $input, length($input));
-//        });
+        test('repeatLazy() unbounded', function() {
+          $input = array_fill(0, 999, 'a');
+          $parser = word()->repeatLazy(digit(), 2, Parser::UNBOUNDED);
+          expectSuccess($parser, implode('',$input) . '1111', $input, length($input));
+        });
 
         test(
             'separatedBy()',
@@ -1534,20 +1533,19 @@ group(
             }
         );
 
-        // TODO debug
-//        test(
-//            'looping',
-//            function () {
-//                $parser1 = undefined();
-//                $parser2 = undefined();
-//                $parser3 = undefined();
-//                $parser1->set($parser2);
-//                $parser2->set($parser3);
-//                $parser3->set($parser1);
-//                $parsers = iterator_to_array(allParser($parser1));
-//                check($parsers, array($parser1, $parser2, $parser3));
-//            }
-//        );
+        test(
+            'looping',
+            function () {
+                $parser1 = undefined();
+                $parser2 = undefined();
+                $parser3 = undefined();
+                $parser1->set($parser2);
+                $parser2->set($parser3);
+                $parser3->set($parser1);
+                $parsers = iterator_to_array(allParser($parser1));
+                check($parsers, array($parser1, $parser2, $parser3));
+            }
+        );
 
         test(
             'basic',
@@ -1583,19 +1581,18 @@ group(
             }
         );
 
-        // TODO debug this test, which goes into an infinite loop
-//        test('root', function () {
-//            $source = lowercase();
-//            $input = $source;
-//            $target = uppercase();
-//            $output = transformParser($input, function (Parser $parser) use ($source, $target) {
-//                return $source->isEqualTo($parser) ? $target : $parser;
-//            });
-//            check($input !== $output, true);
-//            check($input->isEqualTo($output), false);
-//            check($input, $source);
-//            check($output, $target);
-//        });
+        test('root', function () {
+            $source = lowercase();
+            $input = $source;
+            $target = uppercase();
+            $output = transformParser($input, function (Parser $parser) use ($source, $target) {
+                return $source->isEqualTo($parser) ? $target : $parser;
+            });
+            check($input !== $output, true);
+            check($input->isEqualTo($output), false);
+            check($input, $source);
+            check($output, $target);
+        });
 
         test(
             'single',
@@ -1635,43 +1632,48 @@ group(
             }
         );
 
-        // TODO debug
-//        test(
-//            'loop (existing)',
-//            function () {
-//                $input = failure()->settable()->settable()->settable();
-//                $input->children[0]->children[0]->set($input);
-//                $output = transformParser(
-//                    $input,
-//                    function (Parser $parser) {
-//                        return $parser;
-//                    }
-//                );
-//                ok($input !== $output);
-//                ok($input->isEqualTo($output));
-//                $inputs = allParser($input)->toSet(); // TODO
-//            }
-//        );
+        test(
+            'loop (existing)',
+            function () {
+                $input = failure()->settable()->settable()->settable();
+                $input->children[0]->children[0]->set($input);
+                $output = transformParser(
+                    $input,
+                    function (Parser $parser) {
+                        return $parser;
+                    }
+                );
+                ok($input !== $output);
+                ok($input->isEqualTo($output));
+                $inputs = iterator_to_array(allParser($input));
+                $outputs = iterator_to_array(allParser($output));
+                foreach ($inputs as $each_input) {
+                    ok(! in_array($each_input, $outputs, true));
+                }
+                foreach ($outputs as $each_output) {
+                    ok(! in_array($each_output, $inputs, true));
+                }
+            }
+        );
 
-        // TODO debug
-//        test(
-//            'loop (new)',
-//            function () {
-//                $source = lowercase();
-//                $input = $source;
-//                $target = failure()->settable()->settable()->settable();
-//                $target->children[0]->children[0]->set($target);
-//                $output = transformParser(
-//                    $input,
-//                    function (Parser $parser) use ($source, $target) {
-//                        return $source->isEqualTo($parser) ? $target : $parser;
-//                    }
-//                );
-//                ok($input !== $output);
-//                ok(! $input->isEqualTo($output));
-//                ok($output->isEqualTo($target));
-//            }
-//        );
+        test(
+            'loop (new)',
+            function () {
+                $source = lowercase();
+                $input = $source;
+                $target = failure()->settable()->settable()->settable();
+                $target->children[0]->children[0]->set($target);
+                $output = transformParser(
+                    $input,
+                    function (Parser $parser) use ($source, $target) {
+                        return $source->isEqualTo($parser) ? $target : $parser;
+                    }
+                );
+                ok($input !== $output);
+                ok(! $input->isEqualTo($output));
+                ok($output->isEqualTo($target));
+            }
+        );
 
         test(
             'transform delegate',
