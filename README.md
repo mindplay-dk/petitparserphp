@@ -10,33 +10,29 @@ Lukas Renggli's PetitParser ported to PHP by Rasmus Schultz.
 [![Code Coverage](https://scrutinizer-ci.com/g/mindplay-dk/petitparserphp/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/mindplay-dk/petitparserphp/?branch=master)
 
 
-Status and scope of this port
------------------------------
+Status of this port
+-------------------
 
-- API (method-names, etc.) is *unstable and subject to change* pending the first tagged release.
+- The port is up-to-date with release 1.3.4 of dart-petitparser.
 
-- Most of the core and all core unit tests have been ported and are passing.
+- The core has been ported, and all core unit tests have been ported and are passing.
 
-- Fully type-hinted with php-doc, passing all inspections in PhpStorm.
+- **API (method-names, etc.) are still subject to change** pending the first tagged release.
+
+
+Scope of this port
+------------------
 
 - Actual grammars and parsers (XML, Dart, Lisp, etc.) have not been ported, and isn't planned.
 
 - "definition.dart" cannot be directly ported due to different language mechanics.
 
-- The port is up-to-date with the following version of PetitParserDart:
-
-  https://github.com/renggli/PetitParserDart/commit/626f2c95c8157d8e80ef101b5c80cf6b7beef183
-
-- Work in progress targeting the following version:
-
-  https://github.com/renggli/PetitParserDart/commit/3ba18393343977780a155277310dddfa2c3caa4d
-
 
 Contributions
 -------------
 
-Code adheres to PSR-2.
-
-One class/interface per file.
+Code adheres to PSR-1, PSR-2 and PSR-4.
 
 Grammars and parsers belong in separate projects/packages, not in this one.
+
+Source code is fully type-hinted with php-doc, passing all inspections in Php Storm.
