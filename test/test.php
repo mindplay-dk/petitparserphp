@@ -2479,6 +2479,221 @@ group(
 );
 
 group(
+    'json',
+    function () {
+        $json = new JsonParser();
+
+        test(
+            'empty',
+            function () use ($json) {
+                check($json->parse('[]')->value, array());
+            }
+        );
+
+        test(
+            'small',
+            function () use ($json) {
+                check($json->parse('["a"]')->value, array('a'));
+            }
+        );
+
+        test(
+            'large',
+            function () use ($json) {
+                check($json->parse('["a", "b", "c"]')->value, array('a', 'b', 'c'));
+            }
+        );
+
+        test(
+            'nested',
+            function () use ($json) {
+                check($json->parse('[["a"]]')->value, array(array('a')));
+            }
+        );
+
+        test(
+            'invalid',
+            function () use ($json) {
+                check($json->parse('[')->isFailure, true);
+                check($json->parse('[1')->isFailure, true);
+                check($json->parse('[1,')->isFailure, true);
+                check($json->parse('[1,]')->isFailure, true);
+                check($json->parse('[1 2]')->isFailure, true);
+                check($json->parse('[]]')->isFailure, true);
+            }
+        );
+
+        test(
+            'empty',
+            function () use ($json) {
+                check($json->parse('{}')->value, array());
+            }
+        );
+
+        test(
+            'small',
+            function () use ($json) {
+                check($json->parse('{"a": 1}')->value, array('a' => 1));
+            }
+        );
+
+        test(
+            'large',
+            function () use ($json) {
+                check($json->parse('{"a": 1, "b": 2, "c": 3}')->value, array(
+                    'a' => 1,
+                    'b' => 2,
+                    'c' => 3
+                ));
+            }
+        );
+
+        test(
+            'nested',
+            function () use ($json) {
+                check($json->parse('{"obj": {"a": 1}}')->value, array('obj' => array("a" => 1)));
+            }
+        );
+
+        test(
+            'invalid',
+            function () use ($json) {
+                check($json->parse('{')->isFailure, true);
+                check($json->parse('{\'a\'')->isFailure, true);
+                check($json->parse('{\'a\':')->isFailure, true);
+                check($json->parse('{\'a\':\'b\'')->isFailure, true);
+                check($json->parse('{\'a\':\'b\',')->isFailure, true);
+                check($json->parse('{\'a\'}')->isFailure, true);
+                check($json->parse('{\'a\':}')->isFailure, true);
+                check($json->parse('{\'a\':\'b\',}')->isFailure, true);
+                check($json->parse('{}}')->isFailure, true);
+            }
+        );
+
+        test(
+            'valid true',
+            function () use ($json) {
+                check($json->parse('true')->value, true);
+            }
+        );
+
+        test(
+            'invalid true',
+            function () use ($json) {
+                check($json->parse('tr')->isFailure, true);
+                check($json->parse('trace')->isFailure, true);
+                check($json->parse('truest')->isFailure, true);
+            }
+        );
+
+        test(
+            'valid false',
+            function () use ($json) {
+                check($json->parse('false')->value, false);
+            }
+        );
+
+        test(
+            'invalid false',
+            function () use ($json) {
+                check($json->parse('fa')->isFailure, true);
+                check($json->parse('falsely')->isFailure, true);
+                check($json->parse('fabulous')->isFailure, true);
+            }
+        );
+
+        test(
+            'valid null',
+            function () use ($json) {
+                check($json->parse('null')->value, null);
+            }
+        );
+
+        test(
+            'invalid null',
+            function () use ($json) {
+                check($json->parse('nu')->isFailure, true);
+                check($json->parse('nuclear')->isFailure, true);
+                check($json->parse('nullified')->isFailure, true);
+            }
+        );
+
+        test(
+            'valid integer',
+            function () use ($json) {
+                check($json->parse('0')->value, 0);
+                check($json->parse('1')->value, 1);
+                check($json->parse('-1')->value, - 1);
+                check($json->parse('12')->value, 12);
+                check($json->parse('-12')->value, - 12);
+                check($json->parse('1e2')->value, 100);
+                check($json->parse('1e+2')->value, 100);
+            }
+        );
+
+        test(
+            'invalid integer',
+            function () use ($json) {
+                check($json->parse('00')->isFailure, true);
+                check($json->parse('01')->isFailure, true);
+            }
+        );
+
+        test(
+            'valid float',
+            function () use ($json) {
+                check($json->parse('0.0')->value, 0.0);
+                check($json->parse('0.12')->value, 0.12);
+                check($json->parse('-0.12')->value, - 0.12);
+                check($json->parse('12.34')->value, 12.34);
+                check($json->parse('-12.34')->value, - 12.34);
+                check($json->parse('1.2e-1')->value, 1.2e-1);
+                check($json->parse('1.2E-1')->value, 1.2e-1);
+            }
+        );
+
+        test(
+            'invalid float',
+            function () use ($json) {
+                check($json->parse('.1')->isFailure, true);
+                check($json->parse('0.1.1')->isFailure, true);
+            }
+        );
+
+        test(
+            'plain string',
+            function () use ($json) {
+                check($json->parse('""')->value, '');
+                check($json->parse('"foo"')->value, 'foo');
+                check($json->parse('"foo bar"')->value, 'foo bar');
+            }
+        );
+
+        test(
+            'escaped string',
+            function () use ($json) {
+                check($json->parse('"\\""')->value, '"');
+                check($json->parse('"\\\\"')->value, "\\");
+                check($json->parse('"\\b"')->value, "\b");
+                check($json->parse('"\\f"')->value, "\f");
+                check($json->parse('"\\n"')->value, "\n");
+                check($json->parse('"\\r"')->value, "\r");
+                check($json->parse('"\\t"')->value, "\t");
+            }
+        );
+
+        test(
+            'invalid string',
+            function () use ($json) {
+                check($json->parse('"')->isFailure, true);
+                check($json->parse('"a')->isFailure, true);
+                check($json->parse("\"a\\\"")->isFailure, true);
+            }
+        );
+    }
+);
+
+group(
     'optimize',
     function () {
         test(

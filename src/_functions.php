@@ -330,13 +330,17 @@ function any($message = null)
  * For example, [:anyIn('ab'):] succeeds and consumes either the letter
  * [:'a':] or the letter [:'b':]. For any other input the parser fails.
  *
- * @param array  $elements
+ * @param array|string $elements
  * @param string $message
  *
  * @return Parser
  */
 function anyIn($elements, $message = null)
 {
+    if (is_string($elements)) {
+        $elements = Buffer::create($elements)->toArray();
+    }
+
     return predicate(
         1,
         function ($each) use ($elements) {

@@ -122,6 +122,22 @@ class Buffer extends Accessors
     }
 
     /**
+     * @return string[] individual characters in the original source encoding
+     */
+    public function toArray()
+    {
+        $length = $this->get_length();
+
+        $array = array();
+
+        for ($i=0; $i<$length; $i++) {
+            $array[] = $this->charAt($i);
+        }
+
+        return $array;
+    }
+
+    /**
      * @param int $offset base-0 character offset
      *
      * @return int unsigned long (always 32 bit, machine byte order)

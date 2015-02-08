@@ -114,6 +114,10 @@ function format($value, $verbose = false)
         return get_class($value);
     }
 
+    if (is_scalar($value) && $verbose) {
+        return print_r($value, true) . ' [' . gettype($value) . ']';
+    }
+
     return print_r($value, true);
 }
 
