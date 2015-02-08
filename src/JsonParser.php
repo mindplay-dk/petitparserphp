@@ -72,7 +72,7 @@ class JsonParser extends CompositeParser
                 ->or_($this->ref('characterNormal')));
 
         $this->def('characterEscape',
-            char("\\")->seq(anyIn(array_keys(self::$escapeTable))));
+            char("\\")->seq(anyIn(array_keys(JsonParser::$escapeTable))));
 
         $this->def('characterNormal',
             anyIn("\"\\")->neg());
@@ -168,7 +168,7 @@ class JsonParser extends CompositeParser
         $this->action(
             'characterEscape',
             function ($each) {
-                return self::$escapeTable[$each[1]];
+                return JsonParser::$escapeTable[$each[1]];
             }
         );
 
