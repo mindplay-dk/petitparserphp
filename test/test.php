@@ -2380,6 +2380,48 @@ group(
     }
 );
 
+class NumericExpressionParser extends Grammar
+{
+    protected function init()
+    {
+        $terms = $this->ref();
+        $addition = $this->ref();
+        $factors = $this->ref();
+        $multiplication = $this->ref();
+        $power = $this->ref();
+        $primary = $this->ref();
+        $number = $this->ref();
+        $parentheses = $this->ref();
+
+        $start = $this->ref();
+
+        $start->set($terms->end_());
+
+        $terms->set($addition->or_($factors));
+
+        $addition->set($factors->separatedBy(char('+')->or_(char('-'))->trim()));
+
+        $factors->set($multiplication->or_($power));
+
+        $multiplication->set($power->separatedBy(char('*')->or_(char('/'))->trim()));
+
+        $power->set($primary->separatedBy(char('^')->trim()));
+
+        $primary->set($number->or_($parentheses));
+
+        $number->set(char('-')
+            ->optional()
+            ->seq(digit()->plus())
+            ->seq(char('.')->seq(digit()->plus())->optional())
+            ->flatten()
+            ->trim());
+
+        $parentheses->set(char('(')->trim()->seq($terms)->seq(char(')')->trim()));
+
+        return $start;
+    }
+}
+
 group(
     'tutorial',
     function () {
@@ -2473,6 +2515,30 @@ group(
                     $self->action('element', 'intval');
                 });
                 check(array(1, 23, 456), $parser->parse('1,23,456')->value);
+            }
+        );
+
+        test(
+            'grammar',
+            function () {
+                $parser = new NumericExpressionParser();
+
+                check($parser->accept(Buffer::create('1')), true);
+                check($parser->accept(Buffer::create('12')), true);
+                check($parser->accept(Buffer::create('1.23')), true);
+                check($parser->accept(Buffer::create('-12.3')), true);
+                check($parser->accept(Buffer::create('1 + 2')), true);
+                check($parser->accept(Buffer::create('1 + 2 + 3')), true);
+                check($parser->accept(Buffer::create('1 - 2')), true);
+                check($parser->accept(Buffer::create('1 - 2 - 3')), true);
+                check($parser->accept(Buffer::create('1 * 2')), true);
+                check($parser->accept(Buffer::create('1 * 2 * 3')), true);
+                check($parser->accept(Buffer::create('1 / 2')), true);
+                check($parser->accept(Buffer::create('1 / 2 / 3')), true);
+                check($parser->accept(Buffer::create('1 ^ 2')), true);
+                check($parser->accept(Buffer::create('1 ^ 2 ^ 3')), true);
+                check($parser->accept(Buffer::create('1 + (2 * 3)')), true);
+                check($parser->accept(Buffer::create('(1 + 2) * 3')), true);
             }
         );
     }
