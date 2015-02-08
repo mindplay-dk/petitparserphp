@@ -17,13 +17,17 @@ Status of this port
 
 - The core has been ported, and all core unit tests have been ported and are passing.
 
+- The previous version of the JSON parser has been ported along with the tests. (newer version
+  is based on GrammarParser which has not been ported, because it uses language mechanics that
+  aren't applicable to PHP.)
+
 - **API (method-names, etc.) are still subject to change** pending the first tagged release.
 
 
 Scope of this port
 ------------------
 
-- Actual grammars and parsers (XML, Dart, Lisp, etc.) have not been ported, and isn't planned.
+- Other grammars and parsers (XML, Dart, Lisp, etc.) have not been ported, and isn't planned.
 
 - "definition.dart" cannot be directly ported due to different language mechanics.
 
