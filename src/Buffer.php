@@ -140,7 +140,7 @@ class Buffer
      */
     public function charCodeAt($offset)
     {
-        $bytes = mb_substr($this->_string, 4 * ($offset + $this->_start), 4, '8bit');
+        $bytes = substr($this->_string, 4 * ($offset + $this->_start), 4);
 
         // http://dk1.php.net/manual/en/function.unpack.php#106041
 
@@ -149,7 +149,7 @@ class Buffer
             return ($l + ($h * 0x010000));
         } else {
             list(, $int) = unpack('N', $bytes);
-            return $int;
+            return $int[1];
         }
     }
 
