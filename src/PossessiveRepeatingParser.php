@@ -17,22 +17,22 @@ class PossessiveRepeatingParser extends RepeatingParser
         while (count($elements) < $this->_min) {
             $result = $this->_delegate->parseOn($current);
 
-            if ($result->isFailure) {
+            if ($result->isFailure()) {
                 return $result;
             }
 
-            $elements[] = $result->value;
+            $elements[] = $result->getValue();
             $current = $result;
         }
 
         while ($this->_max === Parser::UNBOUNDED || count($elements) < $this->_max) {
             $result = $this->_delegate->parseOn($current);
 
-            if ($result->isFailure) {
+            if ($result->isFailure()) {
                 return $current->success($elements);
             }
 
-            $elements[] = $result->value;
+            $elements[] = $result->getValue();
             $current = $result;
         }
 

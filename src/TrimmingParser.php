@@ -19,12 +19,13 @@ class TrimmingParser extends DelegateParser
     protected $_right;
 
     /**
-     * @param Parser $parser
-     * @param Parser $trimmer
+     * @param Parser $delegate
+     * @param Parser $left
+     * @param Parser $right
      */
-    public function __construct(Parser $parser, Parser $left, Parser $right)
+    public function __construct(Parser $delegate, Parser $left, Parser $right)
     {
-        parent::__construct($parser);
+        parent::__construct($delegate);
 
         $this->_left = $left;
         $this->_right = $right;
@@ -41,11 +42,11 @@ class TrimmingParser extends DelegateParser
 
         do {
             $current = $this->_left->parseOn($current);
-        } while ($current->isSuccess);
+        } while ($current->isSuccess());
 
         $result = $this->_delegate->parseOn($current);
 
-        if ($result->isFailure) {
+        if ($result->isFailure()) {
             return $result;
         }
 
@@ -53,9 +54,9 @@ class TrimmingParser extends DelegateParser
 
         do {
             $current = $this->_right->parseOn($current);
-        } while ($current->isSuccess);
+        } while ($current->isSuccess());
 
-        return $current->success($result->value);
+        return $current->success($result->getValue());
     }
 
     /**
@@ -67,10 +68,9 @@ class TrimmingParser extends DelegateParser
     }
 
     /**
-     * @return Parser[]
-     * @see $children
+     * @inheritdoc
      */
-    protected function get_children()
+    public function getChildren()
     {
         return array($this->_delegate, $this->_left, $this->_right);
     }

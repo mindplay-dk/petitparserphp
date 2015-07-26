@@ -17,7 +17,7 @@ class ChoiceParser extends ListParser
         for ($i=0; $i < count($this->_parsers); $i++) {
             $result = $this->_parsers[$i]->parseOn($context);
 
-            if ($result->isSuccess) {
+            if ($result->isSuccess()) {
                 return $result;
             }
         }

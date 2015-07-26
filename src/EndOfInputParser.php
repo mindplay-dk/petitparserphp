@@ -32,11 +32,11 @@ class EndOfInputParser extends DelegateParser
     {
         $result = $this->_delegate->parseOn($context);
 
-        if ($result->isFailure || $result->position == $result->buffer->length) {
+        if ($result->isFailure() || $result->getPosition() == $result->getBuffer()->getLength()) {
             return $result;
         }
 
-        return $result->failure($this->_message, $result->position);
+        return $result->failure($this->_message, $result->getPosition());
     }
 
     public function __toString()

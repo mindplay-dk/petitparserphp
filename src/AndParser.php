@@ -22,8 +22,8 @@ class AndParser extends DelegateParser
     {
         $result = $this->_delegate->parseOn($context);
 
-        if ($result->isSuccess) {
-            return $context->success($result->value);
+        if ($result->isSuccess()) {
+            return $context->success($result->getValue());
         } else {
             return $result;
         }

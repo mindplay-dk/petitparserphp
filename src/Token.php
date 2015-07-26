@@ -6,17 +6,8 @@ namespace petitparser;
  * A token represents a parsed part of the input stream. The token holds
  * the parsed input, the input buffer, and the start and stop position
  * in the input buffer.
- *
- * @property-read mixed $value Returns the parsed value.
- * @property-read Buffer $buffer Returns the input buffer.
- * @property-read int $start Returns the start position in the input buffer.
- * @property-read int $stop Returns the stop position in the input buffer.
- * @property-read int $length Returns the length of the token.
- * @property-read int $line Returns the line number of the token.
- * @property-read int $column Returns the column number of this token.
- * @property-read string $input The consumed input of the token.
  */
-class Token extends Accessors implements Comparable
+class Token implements Comparable
 {
     /**
      * @var mixed
@@ -78,11 +69,11 @@ class Token extends Accessors implements Comparable
 
         foreach (Token::newLineParser()->token()->matchesSkipping($buffer) as $token) {
             /** @var Token $token */
-            if ($position < $token->stop) {
+            if ($position < $token->getStop()) {
                 return array($line, $position - $offset + 1);
             }
             $line += 1;
-            $offset = $token->stop;
+            $offset = $token->getStop();
         }
 
         return array($line, $position - $offset + 1);
@@ -102,55 +93,49 @@ class Token extends Accessors implements Comparable
     }
 
     /**
-     * @see $value
-     * @ignore
+     * @return mixed the parsed value.
      */
-    protected function get_value()
+    public function getValue()
     {
         return $this->_value;
     }
 
     /**
-     * @see $buffer
-     * @ignore
+     * @return Buffer the input buffer.
      */
-    protected function get_buffer()
+    public function getBuffer()
     {
         return $this->_buffer;
     }
 
     /**
-     * @see $start
-     * @ignore
+     * @return int the start position in the input buffer.
      */
-    protected function get_start()
+    public function getStart()
     {
         return $this->_start;
     }
 
     /**
-     * @see $stop
-     * @ignore
+     * @return int the stop position in the input buffer.
      */
-    protected function get_stop()
+    public function getStop()
     {
         return $this->_stop;
     }
 
     /**
-     * @see $length
-     * @ignore
+     * @return int the length of the token.
      */
-    protected function get_length()
+    public function getLength()
     {
         return $this->_stop - $this->_start;
     }
 
     /**
-     * @see $line
-     * @ignore
+     * @return int the line number of the token.
      */
-    protected function get_line()
+    public function getLine()
     {
         /** @noinspection PhpUnusedLocalVariableInspection */
         list($line, $column) = Token::lineAndColumnOf($this->_buffer, $this->_start);
@@ -159,10 +144,9 @@ class Token extends Accessors implements Comparable
     }
 
     /**
-     * @see $column
-     * @ignore
+     * @return int the column number of this token.
      */
-    protected function get_column()
+    public function getColumn()
     {
         /** @noinspection PhpUnusedLocalVariableInspection */
         list($line, $column) = Token::lineAndColumnOf($this->_buffer, $this->_start);
@@ -171,12 +155,11 @@ class Token extends Accessors implements Comparable
     }
 
     /**
-     * @see $input
-     * @ignore
+     * @return string the consumed input of the token.
      */
-    protected function get_input()
+    public function getInput()
     {
-        return $this->buffer->slice($this->start, $this->stop)->string;
+        return $this->getBuffer()->slice($this->getStart(), $this->getStop())->getString();
     }
 
     /**
@@ -184,7 +167,7 @@ class Token extends Accessors implements Comparable
      */
     public function __toString()
     {
-        return 'Token[' . self::positionString($this->buffer, $this->start) . ']: [' . implode(', ', $this->value) . ']';
+        return 'Token[' . self::positionString($this->getBuffer(), $this->getStart()) . ']: [' . implode(', ', $this->getValue()) . ']';
     }
 
     /**

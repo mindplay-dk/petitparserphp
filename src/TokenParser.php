@@ -16,8 +16,8 @@ class TokenParser extends DelegateParser
     {
         $result = $this->_delegate->parseOn($context);
 
-        if ($result->isSuccess) {
-            $token = new Token($result->value, $context->buffer, $context->position, $result->position);
+        if ($result->isSuccess()) {
+            $token = new Token($result->getValue(), $context->getBuffer(), $context->getPosition(), $result->getPosition());
 
             return $result->success($token);
         } else {

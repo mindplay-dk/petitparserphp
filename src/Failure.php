@@ -24,28 +24,25 @@ class Failure extends Result
     }
 
     /**
-     * @see $isFailure
-     * @ignore
+     * @inheritdoc
      */
-    protected function get_isFailure()
+    public function isFailure()
     {
         return true;
     }
 
     /**
-     * @see $value
-     * @ignore
+     * @inheritdoc
      */
-    protected function get_value()
+    public function getValue()
     {
         throw new ParserError($this);
     }
 
     /**
-     * @see $message
-     * @ignore
+     * @inheritdoc
      */
-    protected function get_message()
+    public function getMessage()
     {
         return $this->_message;
     }

@@ -33,8 +33,8 @@ class ActionParser extends DelegateParser
     {
         $result = $this->_delegate->parseOn($context);
 
-        if ($result->isSuccess) {
-            return $result->success(call_user_func($this->_function, $result->value));
+        if ($result->isSuccess()) {
+            return $result->success(call_user_func($this->_function, $result->getValue()));
         } else {
             return $result;
         }

@@ -32,9 +32,9 @@ class DelegateParser extends Parser
     }
 
     /**
-     * @return Parser[]
+     * @inheritdoc
      */
-    protected function get_children()
+    public function getChildren()
     {
         return array($this->_delegate);
     }

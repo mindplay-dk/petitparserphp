@@ -10,12 +10,8 @@ namespace petitparser;
  * at the cost of (4x) memory overhead, but internally, the string data
  * is a reference, not a copy, which should make it more memory efficient
  * overall, e.g. compared to a substrings taken from a string scalar.
- *
- * @property-read int $length number of characters in buffer
- * @property-read string $encoding source string character encoding
- * @property-read string $string string buffer in original source encoding
  */
-class Buffer extends Accessors
+class Buffer
 {
     /**
      * @var string UTF-32 encoded string buffer
@@ -126,7 +122,7 @@ class Buffer extends Accessors
      */
     public function toArray()
     {
-        $length = $this->get_length();
+        $length = $this->getLength();
 
         $array = array();
 
@@ -176,31 +172,28 @@ class Buffer extends Accessors
     }
 
     /**
-     * @see $length
-     * @ignore
+     * @return int number of characters in buffer
      */
-    protected function get_length()
+    public function getLength()
     {
         return $this->_end - $this->_start;
     }
 
     /**
-     * @see $encoding
-     * @ignore
+     * @return string source string character encoding
      */
-    protected function get_encoding()
+    public function getEncoding()
     {
         return $this->_encoding;
     }
 
     /**
-     * @see $string
-     * @ignore
+     * @return string string buffer in original source encoding
      */
-    protected function get_string()
+    public function getString()
     {
         return mb_convert_encoding(
-            mb_substr($this->_string, 4 * $this->_start, 4 * $this->get_length(), '8bit'),
+            mb_substr($this->_string, 4 * $this->_start, 4 * $this->getLength(), '8bit'),
             $this->_encoding,
             'UTF-32'
         );

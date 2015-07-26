@@ -25,28 +25,25 @@ class Success extends Result
     }
 
     /**
-     * @see $isSuccess
-     * @ignore
+     * @inheritdoc
      */
-    protected function get_isSuccess()
+    public function isSuccess()
     {
         return true;
     }
 
     /**
-     * @see $value
-     * @ignore
+     * @inheritdoc
      */
-    protected function get_value()
+    public function getValue()
     {
         return $this->_value;
     }
 
     /**
-     * @see $message
-     * @ignore
+     * @inheritdoc
      */
-    protected function get_message()
+    public function getMessage()
     {
         return null;
     }

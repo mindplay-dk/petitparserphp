@@ -132,15 +132,15 @@ group(
                 expectFailure($parser, '');
                 expectFailure($parser, 'a');
                 /** @var Token $token */
-                $token = $parser->parse('123')->value;
-                check($token->value, array('1', '2', '3'));
-                check($token->buffer->string, '123');
-                check($token->start, 0);
-                check($token->stop, 3);
-                check($token->input, '123');
-                check($token->length, 3);
-                check($token->line, 1);
-                check($token->column, 1);
+                $token = $parser->parse('123')->getValue();
+                check($token->getValue(), array('1', '2', '3'));
+                check($token->getBuffer()->getString(), '123');
+                check($token->getStart(), 0);
+                check($token->getStop(), 3);
+                check($token->getInput(), '123');
+                check($token->getLength(), 3);
+                check($token->getLine(), 1);
+                check($token->getColumn(), 1);
                 check((string)$token, 'Token[1:1]: [1, 2, 3]');
             }
         );
@@ -1029,7 +1029,7 @@ group(
             ->star();
 
         $buffer = "1\r12\r\n123\n1234";
-        $result = $parser->parse($buffer)->value;
+        $result = $parser->parse($buffer)->getValue();
 
         test(
             'value',
@@ -1037,7 +1037,7 @@ group(
                 check(
                     array_map(
                         function ($token) {
-                            return $token->value;
+                            return $token->getValue();
                         },
                         $result
                     ),
@@ -1052,7 +1052,7 @@ group(
                 check(
                     array_map(
                         function ($token) {
-                            return $token->buffer->string;
+                            return $token->getBuffer()->getString();
                         },
                         $result
                     ),
@@ -1067,7 +1067,7 @@ group(
                 check(
                     array_map(
                         function ($token) {
-                            return $token->start;
+                            return $token->getStart();
                         },
                         $result
                     ),
@@ -1082,7 +1082,7 @@ group(
                 check(
                     array_map(
                         function ($token) {
-                            return $token->stop;
+                            return $token->getStop();
                         },
                         $result
                     ),
@@ -1097,7 +1097,7 @@ group(
                 check(
                     array_map(
                         function ($token) {
-                            return $token->length;
+                            return $token->getLength();
                         },
                         $result
                     ),
@@ -1112,7 +1112,7 @@ group(
                 check(
                     array_map(
                         function ($token) {
-                            return $token->line;
+                            return $token->getLine();
                         },
                         $result
                     ),
@@ -1127,7 +1127,7 @@ group(
                 check(
                     array_map(
                         function (Token $token) {
-                            return $token->column;
+                            return $token->getColumn();
                         },
                         $result
                     ),
@@ -1142,7 +1142,7 @@ group(
                 check(
                     array_map(
                         function ($token) {
-                            return $token->input;
+                            return $token->getInput();
                         },
                         $result
                     ),
@@ -1177,8 +1177,8 @@ group(
         test(
             'context',
             function () use ($context, $input) {
-                check($context->buffer->string, $input);
-                check($context->position, 0);
+                check($context->getBuffer()->getString(), $input);
+                check($context->getPosition(), 0);
                 check($context->__toString(), 'Context[1:1]');
             }
         );
@@ -1187,12 +1187,12 @@ group(
             'success',
             function () use ($context, $input) {
                 $success = $context->success('result');
-                check($success->buffer->string, $input);
-                check($success->position, 0);
-                check($success->value, 'result');
-                check($success->message, null);
-                check($success->isSuccess, true);
-                check($success->isFailure, false);
+                check($success->getBuffer()->getString(), $input);
+                check($success->getPosition(), 0);
+                check($success->getValue(), 'result');
+                check($success->getMessage(), null);
+                check($success->isSuccess(), true);
+                check($success->isFailure(), false);
                 check($success->__toString(), 'Success[1:1]: result');
             }
         );
@@ -1201,12 +1201,12 @@ group(
             'success with position',
             function () use ($context, $input) {
                 $success = $context->success('result', 2);
-                check($success->buffer->string, $input);
-                check($success->position, 2);
-                check($success->value, 'result');
-                check($success->message, null);
-                check($success->isSuccess, true);
-                check($success->isFailure, false);
+                check($success->getBuffer()->getString(), $input);
+                check($success->getPosition(), 2);
+                check($success->getValue(), 'result');
+                check($success->getMessage(), null);
+                check($success->isSuccess(), true);
+                check($success->isFailure(), false);
                 check($success->__toString(), 'Success[2:1]: result');
             }
         );
@@ -1215,18 +1215,18 @@ group(
             'failure',
             function () use ($context, $input) {
                 $failure = $context->failure('error');
-                check($failure->buffer->string, $input);
-                check($failure->position, 0);
+                check($failure->getBuffer()->getString(), $input);
+                check($failure->getPosition(), 0);
                 try {
-                    $failure->value;
+                    $failure->getValue();
                     ok(false, 'Expected ParserError to be thrown');
                 } catch (ParserError $error) {
                     check($error->failure, $failure);
                     check($error->__toString(), 'error at 1:1');
                 }
-                check($failure->message, 'error');
-                check($failure->isSuccess, false);
-                check($failure->isFailure, true);
+                check($failure->getMessage(), 'error');
+                check($failure->isSuccess(), false);
+                check($failure->isFailure(), true);
                 check($failure->__toString(), 'Failure[1:1]: error');
             }
         );
@@ -1235,18 +1235,18 @@ group(
             'failure with position',
             function () use ($context, $input) {
                 $failure = $context->failure('error', 2);
-                check($failure->buffer->string, $input);
-                check($failure->position, 2);
+                check($failure->getBuffer()->getString(), $input);
+                check($failure->getPosition(), 2);
                 try {
-                    $failure->value;
+                    $failure->getValue();
                     ok(false, 'Expected ParserError to be thrown');
                 } catch (ParserError $error) {
                     check($error->failure, $failure);
                     check($error->__toString(), 'error at 2:1');
                 }
-                check($failure->message, 'error');
-                check($failure->isSuccess, false);
-                check($failure->isFailure, true);
+                check($failure->getMessage(), 'error');
+                check($failure->isSuccess(), false);
+                check($failure->isFailure(), true);
                 check($failure->__toString(), 'Failure[2:1]: error');
             }
         );
@@ -1260,8 +1260,8 @@ group(
             'parse()',
             function () {
                 $parser = char('a');
-                check($parser->parse('a')->isSuccess, true);
-                check($parser->parse('b')->isSuccess, false);
+                check($parser->parse('a')->isSuccess(), true);
+                check($parser->parse('b')->isSuccess(), false);
             }
         );
 
@@ -1577,7 +1577,7 @@ group(
                 $output = transformParser($input, function (Parser $parser) { return $parser; });
                 ok($input !== $output);
                 check($input->isEqualTo($output), true);
-                ok($input->children[0] !== $output->children[0]);
+                ok($input->getChild(0) !== $output->getChild(0));
             }
         );
 
@@ -1608,8 +1608,8 @@ group(
                 );
                 ok($input !== $output);
                 ok(! $input->isEqualTo($output));
-                check($input->children[0], $source);
-                check($output->children[0], $target);
+                check($input->getChild(0), $source);
+                check($output->getChild(0), $target);
             }
         );
 
@@ -1628,7 +1628,7 @@ group(
                 ok($input !== $output);
                 ok(! $input->isEqualTo($output));
                 ok($input->isEqualTo($source->seq($source)));
-                check($input->children[0], $input->children[count($input->children)-1]);
+                check($input->getChild(0), $input->getChild(count($input->getChildren())-1));
             }
         );
 
@@ -1636,7 +1636,7 @@ group(
             'loop (existing)',
             function () {
                 $input = failure()->settable()->settable()->settable();
-                $input->children[0]->children[0]->set($input);
+                $input->getChild(0)->getChild(0)->set($input);
                 $output = transformParser(
                     $input,
                     function (Parser $parser) {
@@ -1662,7 +1662,7 @@ group(
                 $source = lowercase();
                 $input = $source;
                 $target = failure()->settable()->settable()->settable();
-                $target->children[0]->children[0]->set($target);
+                $target->getChild(0)->getChild(0)->set($target);
                 $output = transformParser(
                     $input,
                     function (Parser $parser) use ($source, $target) {
@@ -1707,7 +1707,7 @@ group(
                 );
                 check($input->isEqualTo($output), false);
                 check($output->isEqualTo($target->seq($target)), true);
-                check($output->children[0], $output->children[count($output->children) - 1]);
+                check($output->getChild(0), $output->getChild(count($output->getChildren()) - 1));
             }
         );
 
@@ -1747,7 +1747,7 @@ group(
                         function () use ($parser) {
                             $copy = $parser->copy();
                             check(get_class($copy), get_class($parser));
-                            check($copy->children, $parser->children, 'same children');
+                            check($copy->getChildren(), $parser->getChildren(), 'same children');
                             check($copy->isEqualTo($copy), true);
                             check($parser->isEqualTo($parser), true);
                             check($copy !== $parser, true);
@@ -2203,178 +2203,178 @@ group(
         test(
             'number',
             function () use ($parser) {
-                checkNum($parser->parse('0')->value, 0.0);
-                checkNum($parser->parse('0.0')->value, 0.0);
-                checkNum($parser->parse('1')->value, 1.0);
-                checkNum($parser->parse('1.2')->value, 1.2);
-                checkNum($parser->parse('34')->value, 34);
-                checkNum($parser->parse('34.7')->value, 34.7);
-                checkNum($parser->parse('56.78')->value, 56.78);
+                checkNum($parser->parse('0')->getValue(), 0.0);
+                checkNum($parser->parse('0.0')->getValue(), 0.0);
+                checkNum($parser->parse('1')->getValue(), 1.0);
+                checkNum($parser->parse('1.2')->getValue(), 1.2);
+                checkNum($parser->parse('34')->getValue(), 34);
+                checkNum($parser->parse('34.7')->getValue(), 34.7);
+                checkNum($parser->parse('56.78')->getValue(), 56.78);
             }
         );
 
         test(
             'negative number',
             function () use ($parser) {
-                checkNum($parser->parse('-1')->value, - 1.0);
-                checkNum($parser->parse('-1.2')->value, - 1.2);
+                checkNum($parser->parse('-1')->getValue(), - 1.0);
+                checkNum($parser->parse('-1.2')->getValue(), - 1.2);
             }
         );
 
         test(
             'add',
             function () use ($parser) {
-                checkNum($parser->parse('1 + 2')->value, 3.0);
-                checkNum($parser->parse('2 + 1')->value, 3.0);
-                checkNum($parser->parse('1 + 2.3')->value, 3.3);
-                checkNum($parser->parse('2.3 + 1')->value, 3.3);
-                checkNum($parser->parse('1 + -2')->value, - 1.0);
-                checkNum($parser->parse('-2 + 1')->value, - 1.0);
+                checkNum($parser->parse('1 + 2')->getValue(), 3.0);
+                checkNum($parser->parse('2 + 1')->getValue(), 3.0);
+                checkNum($parser->parse('1 + 2.3')->getValue(), 3.3);
+                checkNum($parser->parse('2.3 + 1')->getValue(), 3.3);
+                checkNum($parser->parse('1 + -2')->getValue(), - 1.0);
+                checkNum($parser->parse('-2 + 1')->getValue(), - 1.0);
             }
         );
 
         test(
             'add many',
             function () use ($parser) {
-                checkNum($parser->parse('1')->value, 1.0);
-                checkNum($parser->parse('1 + 2')->value, 3.0);
-                checkNum($parser->parse('1 + 2 + 3')->value, 6.0);
-                checkNum($parser->parse('1 + 2 + 3 + 4')->value, 10.0);
-                checkNum($parser->parse('1 + 2 + 3 + 4 + 5')->value, 15.0);
+                checkNum($parser->parse('1')->getValue(), 1.0);
+                checkNum($parser->parse('1 + 2')->getValue(), 3.0);
+                checkNum($parser->parse('1 + 2 + 3')->getValue(), 6.0);
+                checkNum($parser->parse('1 + 2 + 3 + 4')->getValue(), 10.0);
+                checkNum($parser->parse('1 + 2 + 3 + 4 + 5')->getValue(), 15.0);
             }
         );
 
         test(
             'sub',
             function () use ($parser) {
-                checkNum($parser->parse('1 - 2')->value, - 1);
-                checkNum($parser->parse('1.2 - 1.2')->value, 0);
-                checkNum($parser->parse('1 - -2')->value, 3);
-                checkNum($parser->parse('-1 - -2')->value, 1);
+                checkNum($parser->parse('1 - 2')->getValue(), - 1);
+                checkNum($parser->parse('1.2 - 1.2')->getValue(), 0);
+                checkNum($parser->parse('1 - -2')->getValue(), 3);
+                checkNum($parser->parse('-1 - -2')->getValue(), 1);
             }
         );
         
         test(
             'sub many',
             function () use ($parser) {
-                checkNum($parser->parse('1')->value, 1);
-                checkNum($parser->parse('1 - 2')->value, - 1);
-                checkNum($parser->parse('1 - 2 - 3')->value, - 4);
-                checkNum($parser->parse('1 - 2 - 3 - 4')->value, - 8);
-                checkNum($parser->parse('1 - 2 - 3 - 4 - 5')->value, - 13);
+                checkNum($parser->parse('1')->getValue(), 1);
+                checkNum($parser->parse('1 - 2')->getValue(), - 1);
+                checkNum($parser->parse('1 - 2 - 3')->getValue(), - 4);
+                checkNum($parser->parse('1 - 2 - 3 - 4')->getValue(), - 8);
+                checkNum($parser->parse('1 - 2 - 3 - 4 - 5')->getValue(), - 13);
             }
         );
 
         test(
             'mul',
             function () use ($parser) {
-                checkNum($parser->parse('2 * 3')->value, 6);
-                checkNum($parser->parse('2 * -4')->value, - 8);
+                checkNum($parser->parse('2 * 3')->getValue(), 6);
+                checkNum($parser->parse('2 * -4')->getValue(), - 8);
             }
         );
 
         test(
             'mul many',
             function () use ($parser) {
-                checkNum($parser->parse('1 * 2')->value, 2);
-                checkNum($parser->parse('1 * 2 * 3')->value, 6);
-                checkNum($parser->parse('1 * 2 * 3 * 4')->value, 24);
-                checkNum($parser->parse('1 * 2 * 3 * 4 * 5')->value, 120);
+                checkNum($parser->parse('1 * 2')->getValue(), 2);
+                checkNum($parser->parse('1 * 2 * 3')->getValue(), 6);
+                checkNum($parser->parse('1 * 2 * 3 * 4')->getValue(), 24);
+                checkNum($parser->parse('1 * 2 * 3 * 4 * 5')->getValue(), 120);
             }
         );
 
         test(
             'div',
             function () use ($parser) {
-                checkNum($parser->parse('12 / 3')->value, 4);
-                checkNum($parser->parse('-16 / -4')->value, 4);
+                checkNum($parser->parse('12 / 3')->getValue(), 4);
+                checkNum($parser->parse('-16 / -4')->getValue(), 4);
             }
         );
 
         test(
             'div many',
             function () use ($parser) {
-                checkNum($parser->parse('100 / 2')->value, 50);
-                checkNum($parser->parse('100 / 2 / 2')->value, 25);
-                checkNum($parser->parse('100 / 2 / 2 / 5')->value, 5);
-                checkNum($parser->parse('100 / 2 / 2 / 5 / 5')->value, 1);
+                checkNum($parser->parse('100 / 2')->getValue(), 50);
+                checkNum($parser->parse('100 / 2 / 2')->getValue(), 25);
+                checkNum($parser->parse('100 / 2 / 2 / 5')->getValue(), 5);
+                checkNum($parser->parse('100 / 2 / 2 / 5 / 5')->getValue(), 1);
             }
         );
 
         test(
             'pow',
             function () use ($parser) {
-                checkNum($parser->parse('2 ^ 3')->value, 8);
-                checkNum($parser->parse('-2 ^ 3')->value, -8);
-                checkNum($parser->parse('-2 ^ -3')->value, -0.125);
+                checkNum($parser->parse('2 ^ 3')->getValue(), 8);
+                checkNum($parser->parse('-2 ^ 3')->getValue(), -8);
+                checkNum($parser->parse('-2 ^ -3')->getValue(), -0.125);
             }
         );
 
         test(
             'pow many',
             function () use ($parser) {
-                checkNum($parser->parse('4 ^ 3')->value, 64);
-                checkNum($parser->parse('4 ^ 3 ^ 2')->value, 262144);
-                checkNum($parser->parse('4 ^ 3 ^ 2 ^ 1')->value, 262144);
-                checkNum($parser->parse('4 ^ 3 ^ 2 ^ 1 ^ 0')->value, 262144);
+                checkNum($parser->parse('4 ^ 3')->getValue(), 64);
+                checkNum($parser->parse('4 ^ 3 ^ 2')->getValue(), 262144);
+                checkNum($parser->parse('4 ^ 3 ^ 2 ^ 1')->getValue(), 262144);
+                checkNum($parser->parse('4 ^ 3 ^ 2 ^ 1 ^ 0')->getValue(), 262144);
             }
         );
 
         test(
             'parens',
             function () use ($parser) {
-                checkNum($parser->parse('(1)')->value, 1);
-                checkNum($parser->parse('(1 + 2)')->value, 3);
-                checkNum($parser->parse('((1))')->value, 1);
-                checkNum($parser->parse('((1 + 2))')->value, 3);
-                checkNum($parser->parse('2 * (3 + 4)')->value, 14);
-                checkNum($parser->parse('(2 + 3) * 4')->value, 20);
-                checkNum($parser->parse('6 / (2 + 4)')->value, 1);
-                checkNum($parser->parse('(2 + 6) / 2')->value, 4);
+                checkNum($parser->parse('(1)')->getValue(), 1);
+                checkNum($parser->parse('(1 + 2)')->getValue(), 3);
+                checkNum($parser->parse('((1))')->getValue(), 1);
+                checkNum($parser->parse('((1 + 2))')->getValue(), 3);
+                checkNum($parser->parse('2 * (3 + 4)')->getValue(), 14);
+                checkNum($parser->parse('(2 + 3) * 4')->getValue(), 20);
+                checkNum($parser->parse('6 / (2 + 4)')->getValue(), 1);
+                checkNum($parser->parse('(2 + 6) / 2')->getValue(), 4);
             }
         );
 
         test(
             'priority',
             function () use ($parser) {
-                checkNum($parser->parse('2 * 3 + 4')->value, 10);
-                checkNum($parser->parse('2 + 3 * 4')->value, 14);
-                checkNum($parser->parse('6 / 3 + 4')->value, 6);
-                checkNum($parser->parse('2 + 6 / 2')->value, 5);
+                checkNum($parser->parse('2 * 3 + 4')->getValue(), 10);
+                checkNum($parser->parse('2 + 3 * 4')->getValue(), 14);
+                checkNum($parser->parse('6 / 3 + 4')->getValue(), 6);
+                checkNum($parser->parse('2 + 6 / 2')->getValue(), 5);
             }
         );
 
         test(
             'postfix add',
             function () use ($parser) {
-                checkNum($parser->parse('0++')->value, 1);
-                checkNum($parser->parse('0++++')->value, 2);
-                checkNum($parser->parse('0++++++')->value, 3);
-                checkNum($parser->parse('0+++1')->value, 2);
-                checkNum($parser->parse('0+++++1')->value, 3);
-                checkNum($parser->parse('0+++++++1')->value, 4);
+                checkNum($parser->parse('0++')->getValue(), 1);
+                checkNum($parser->parse('0++++')->getValue(), 2);
+                checkNum($parser->parse('0++++++')->getValue(), 3);
+                checkNum($parser->parse('0+++1')->getValue(), 2);
+                checkNum($parser->parse('0+++++1')->getValue(), 3);
+                checkNum($parser->parse('0+++++++1')->getValue(), 4);
             }
         );
 
         test(
             'postfix sub',
             function () use ($parser) {
-                checkNum($parser->parse('1--')->value, 0);
-                checkNum($parser->parse('2----')->value, 0);
-                checkNum($parser->parse('3------')->value, 0);
-                checkNum($parser->parse('2---1')->value, 0);
-                checkNum($parser->parse('3-----1')->value, 0);
-                checkNum($parser->parse('4-------1')->value, 0);
+                checkNum($parser->parse('1--')->getValue(), 0);
+                checkNum($parser->parse('2----')->getValue(), 0);
+                checkNum($parser->parse('3------')->getValue(), 0);
+                checkNum($parser->parse('2---1')->getValue(), 0);
+                checkNum($parser->parse('3-----1')->getValue(), 0);
+                checkNum($parser->parse('4-------1')->getValue(), 0);
             }
         );
 
         test(
             'prefix negate',
             function () use ($parser) {
-                checkNum($parser->parse('1')->value, 1);
-                checkNum($parser->parse('-1')->value, - 1);
-                checkNum($parser->parse('--1')->value, 1);
-                checkNum($parser->parse('---1')->value, - 1);
+                checkNum($parser->parse('1')->getValue(), 1);
+                checkNum($parser->parse('-1')->getValue(), - 1);
+                checkNum($parser->parse('--1')->getValue(), 1);
+                checkNum($parser->parse('---1')->getValue(), - 1);
             }
         );
     }
@@ -2390,13 +2390,13 @@ group(
                 $id1 = $id->parse('yeah');
                 $id2 = $id->parse('f12');
 
-                check($id1->value, array('y', array('e', 'a', 'h')));
-                check($id2->value, array('f', array('1', '2')));
+                check($id1->getValue(), array('y', array('e', 'a', 'h')));
+                check($id2->getValue(), array('f', array('1', '2')));
 
                 $id3 = $id->parse('123');
 
-                check($id3->message, 'letter expected');
-                check($id3->position, 0);
+                check($id3->getMessage(), 'letter expected');
+                check($id3->getPosition(), 0);
                 check($id->accept(Buffer::create('foo')), true);
                 check($id->accept(Buffer::create('123')), false);
             }
@@ -2446,8 +2446,8 @@ group(
 
                 $start = $term->end_();
 
-                check($start->parse('1 + 2 * 3')->value, 7);
-                check($start->parse('(1 + 2) * 3')->value, 9);
+                check($start->parse('1 + 2 * 3')->getValue(), 7);
+                check($start->parse('(1 + 2) * 3')->getValue(), 9);
             }
         );
 
@@ -2459,7 +2459,7 @@ group(
                     $self->def('list', $self->ref('element')->separatedBy(char(','), false));
                     $self->def('element', digit()->plus()->flatten());
                 });
-                check($parser->parse('1,23,456')->value, array('1', '23', '456'));
+                check($parser->parse('1,23,456')->getValue(), array('1', '23', '456'));
             }
         );
 
@@ -2472,7 +2472,7 @@ group(
                     $self->def('element', digit()->plus()->flatten());
                     $self->action('element', 'intval');
                 });
-                check(array(1, 23, 456), $parser->parse('1,23,456')->value);
+                check(array(1, 23, 456), $parser->parse('1,23,456')->getValue());
             }
         );
     }
@@ -2486,61 +2486,61 @@ group(
         test(
             'empty',
             function () use ($json) {
-                check($json->parse('[]')->value, array());
+                check($json->parse('[]')->getValue(), array());
             }
         );
 
         test(
             'small',
             function () use ($json) {
-                check($json->parse('["a"]')->value, array('a'));
+                check($json->parse('["a"]')->getValue(), array('a'));
             }
         );
 
         test(
             'large',
             function () use ($json) {
-                check($json->parse('["a", "b", "c"]')->value, array('a', 'b', 'c'));
+                check($json->parse('["a", "b", "c"]')->getValue(), array('a', 'b', 'c'));
             }
         );
 
         test(
             'nested',
             function () use ($json) {
-                check($json->parse('[["a"]]')->value, array(array('a')));
+                check($json->parse('[["a"]]')->getValue(), array(array('a')));
             }
         );
 
         test(
             'invalid',
             function () use ($json) {
-                check($json->parse('[')->isFailure, true);
-                check($json->parse('[1')->isFailure, true);
-                check($json->parse('[1,')->isFailure, true);
-                check($json->parse('[1,]')->isFailure, true);
-                check($json->parse('[1 2]')->isFailure, true);
-                check($json->parse('[]]')->isFailure, true);
+                check($json->parse('[')->isFailure(), true);
+                check($json->parse('[1')->isFailure(), true);
+                check($json->parse('[1,')->isFailure(), true);
+                check($json->parse('[1,]')->isFailure(), true);
+                check($json->parse('[1 2]')->isFailure(), true);
+                check($json->parse('[]]')->isFailure(), true);
             }
         );
 
         test(
             'empty',
             function () use ($json) {
-                check($json->parse('{}')->value, array());
+                check($json->parse('{}')->getValue(), array());
             }
         );
 
         test(
             'small',
             function () use ($json) {
-                check($json->parse('{"a": 1}')->value, array('a' => 1));
+                check($json->parse('{"a": 1}')->getValue(), array('a' => 1));
             }
         );
 
         test(
             'large',
             function () use ($json) {
-                check($json->parse('{"a": 1, "b": 2, "c": 3}')->value, array(
+                check($json->parse('{"a": 1, "b": 2, "c": 3}')->getValue(), array(
                     'a' => 1,
                     'b' => 2,
                     'c' => 3
@@ -2551,143 +2551,143 @@ group(
         test(
             'nested',
             function () use ($json) {
-                check($json->parse('{"obj": {"a": 1}}')->value, array('obj' => array("a" => 1)));
+                check($json->parse('{"obj": {"a": 1}}')->getValue(), array('obj' => array("a" => 1)));
             }
         );
 
         test(
             'invalid',
             function () use ($json) {
-                check($json->parse('{')->isFailure, true);
-                check($json->parse('{\'a\'')->isFailure, true);
-                check($json->parse('{\'a\':')->isFailure, true);
-                check($json->parse('{\'a\':\'b\'')->isFailure, true);
-                check($json->parse('{\'a\':\'b\',')->isFailure, true);
-                check($json->parse('{\'a\'}')->isFailure, true);
-                check($json->parse('{\'a\':}')->isFailure, true);
-                check($json->parse('{\'a\':\'b\',}')->isFailure, true);
-                check($json->parse('{}}')->isFailure, true);
+                check($json->parse('{')->isFailure(), true);
+                check($json->parse('{\'a\'')->isFailure(), true);
+                check($json->parse('{\'a\':')->isFailure(), true);
+                check($json->parse('{\'a\':\'b\'')->isFailure(), true);
+                check($json->parse('{\'a\':\'b\',')->isFailure(), true);
+                check($json->parse('{\'a\'}')->isFailure(), true);
+                check($json->parse('{\'a\':}')->isFailure(), true);
+                check($json->parse('{\'a\':\'b\',}')->isFailure(), true);
+                check($json->parse('{}}')->isFailure(), true);
             }
         );
 
         test(
             'valid true',
             function () use ($json) {
-                check($json->parse('true')->value, true);
+                check($json->parse('true')->getValue(), true);
             }
         );
 
         test(
             'invalid true',
             function () use ($json) {
-                check($json->parse('tr')->isFailure, true);
-                check($json->parse('trace')->isFailure, true);
-                check($json->parse('truest')->isFailure, true);
+                check($json->parse('tr')->isFailure(), true);
+                check($json->parse('trace')->isFailure(), true);
+                check($json->parse('truest')->isFailure(), true);
             }
         );
 
         test(
             'valid false',
             function () use ($json) {
-                check($json->parse('false')->value, false);
+                check($json->parse('false')->getValue(), false);
             }
         );
 
         test(
             'invalid false',
             function () use ($json) {
-                check($json->parse('fa')->isFailure, true);
-                check($json->parse('falsely')->isFailure, true);
-                check($json->parse('fabulous')->isFailure, true);
+                check($json->parse('fa')->isFailure(), true);
+                check($json->parse('falsely')->isFailure(), true);
+                check($json->parse('fabulous')->isFailure(), true);
             }
         );
 
         test(
             'valid null',
             function () use ($json) {
-                check($json->parse('null')->value, null);
+                check($json->parse('null')->getValue(), null);
             }
         );
 
         test(
             'invalid null',
             function () use ($json) {
-                check($json->parse('nu')->isFailure, true);
-                check($json->parse('nuclear')->isFailure, true);
-                check($json->parse('nullified')->isFailure, true);
+                check($json->parse('nu')->isFailure(), true);
+                check($json->parse('nuclear')->isFailure(), true);
+                check($json->parse('nullified')->isFailure(), true);
             }
         );
 
         test(
             'valid integer',
             function () use ($json) {
-                check($json->parse('0')->value, 0);
-                check($json->parse('1')->value, 1);
-                check($json->parse('-1')->value, - 1);
-                check($json->parse('12')->value, 12);
-                check($json->parse('-12')->value, - 12);
-                check($json->parse('1e2')->value, 100);
-                check($json->parse('1e+2')->value, 100);
+                check($json->parse('0')->getValue(), 0);
+                check($json->parse('1')->getValue(), 1);
+                check($json->parse('-1')->getValue(), - 1);
+                check($json->parse('12')->getValue(), 12);
+                check($json->parse('-12')->getValue(), - 12);
+                check($json->parse('1e2')->getValue(), 100);
+                check($json->parse('1e+2')->getValue(), 100);
             }
         );
 
         test(
             'invalid integer',
             function () use ($json) {
-                check($json->parse('00')->isFailure, true);
-                check($json->parse('01')->isFailure, true);
+                check($json->parse('00')->isFailure(), true);
+                check($json->parse('01')->isFailure(), true);
             }
         );
 
         test(
             'valid float',
             function () use ($json) {
-                check($json->parse('0.0')->value, 0.0);
-                check($json->parse('0.12')->value, 0.12);
-                check($json->parse('-0.12')->value, - 0.12);
-                check($json->parse('12.34')->value, 12.34);
-                check($json->parse('-12.34')->value, - 12.34);
-                check($json->parse('1.2e-1')->value, 1.2e-1);
-                check($json->parse('1.2E-1')->value, 1.2e-1);
+                check($json->parse('0.0')->getValue(), 0.0);
+                check($json->parse('0.12')->getValue(), 0.12);
+                check($json->parse('-0.12')->getValue(), - 0.12);
+                check($json->parse('12.34')->getValue(), 12.34);
+                check($json->parse('-12.34')->getValue(), - 12.34);
+                check($json->parse('1.2e-1')->getValue(), 1.2e-1);
+                check($json->parse('1.2E-1')->getValue(), 1.2e-1);
             }
         );
 
         test(
             'invalid float',
             function () use ($json) {
-                check($json->parse('.1')->isFailure, true);
-                check($json->parse('0.1.1')->isFailure, true);
+                check($json->parse('.1')->isFailure(), true);
+                check($json->parse('0.1.1')->isFailure(), true);
             }
         );
 
         test(
             'plain string',
             function () use ($json) {
-                check($json->parse('""')->value, '');
-                check($json->parse('"foo"')->value, 'foo');
-                check($json->parse('"foo bar"')->value, 'foo bar');
+                check($json->parse('""')->getValue(), '');
+                check($json->parse('"foo"')->getValue(), 'foo');
+                check($json->parse('"foo bar"')->getValue(), 'foo bar');
             }
         );
 
         test(
             'escaped string',
             function () use ($json) {
-                check($json->parse('"\\""')->value, '"');
-                check($json->parse('"\\\\"')->value, "\\");
-                check($json->parse('"\\b"')->value, "\b");
-                check($json->parse('"\\f"')->value, "\f");
-                check($json->parse('"\\n"')->value, "\n");
-                check($json->parse('"\\r"')->value, "\r");
-                check($json->parse('"\\t"')->value, "\t");
+                check($json->parse('"\\""')->getValue(), '"');
+                check($json->parse('"\\\\"')->getValue(), "\\");
+                check($json->parse('"\\b"')->getValue(), "\b");
+                check($json->parse('"\\f"')->getValue(), "\f");
+                check($json->parse('"\\n"')->getValue(), "\n");
+                check($json->parse('"\\r"')->getValue(), "\r");
+                check($json->parse('"\\t"')->getValue(), "\t");
             }
         );
 
         test(
             'invalid string',
             function () use ($json) {
-                check($json->parse('"')->isFailure, true);
-                check($json->parse('"a')->isFailure, true);
-                check($json->parse("\"a\\\"")->isFailure, true);
+                check($json->parse('"')->isFailure(), true);
+                check($json->parse('"a')->isFailure(), true);
+                check($json->parse("\"a\\\"")->isFailure(), true);
             }
         );
     }
@@ -2729,8 +2729,8 @@ group(
                 $input = lowercase()->seq(lowercase());
                 $output = removeDuplicates($input);
                 ok($input->isEqualTo($output));
-                ok($input->children[0] !== $input->children[count($input->children)-1]);
-                check($output->children[0], $output->children[count($output->children)-1]);
+                ok($input->getChild(0) !== $input->getChild(count($input->getChildren())-1));
+                check($output->getChild(0), $output->getChild(count($output->getChildren())-1));
             }
         );
     }
@@ -2748,13 +2748,13 @@ group(
 
                 $iso_buffer = Buffer::create('');
 
-                check($iso_buffer->encoding, 'ISO-8859-1');
+                check($iso_buffer->getEncoding(), 'ISO-8859-1');
 
                 mb_internal_encoding('UTF-8');
 
                 $utf8_buffer = Buffer::create('');
 
-                check($utf8_buffer->encoding, 'UTF-8');
+                check($utf8_buffer->getEncoding(), 'UTF-8');
 
                 mb_internal_encoding($encoding);
             }
@@ -2767,9 +2767,9 @@ group(
 
                 $buffer = Buffer::fromISO($str);
 
-                check($buffer->string, $str);
-                check($buffer->length, 7);
-                check($buffer->encoding, 'ISO-8859-1');
+                check($buffer->getString(), $str);
+                check($buffer->getLength(), 7);
+                check($buffer->getEncoding(), 'ISO-8859-1');
 
                 check($buffer->charAt(0), "\xC2");
                 check($buffer->charAt(6), '!');
@@ -2787,9 +2787,9 @@ group(
 
                 $buffer = Buffer::fromUTF8($str);
 
-                check($buffer->string, $str);
-                check($buffer->length, 6); // 6 characters
-                check($buffer->encoding, 'UTF-8');
+                check($buffer->getString(), $str);
+                check($buffer->getLength(), 6); // 6 characters
+                check($buffer->getEncoding(), 'UTF-8');
 
                 check($buffer->charAt(0), "\xC2\xA1"); // two-byte UTF-8 character
                 check($buffer->charAt(5), $pi);
@@ -2806,25 +2806,25 @@ group(
 
                 $buffer = Buffer::create($str);
 
-                check($buffer->slice(0)->string, $str);
-                check($buffer->slice(1)->string, "2345678");
-                check($buffer->slice(2)->string, "345678");
-                check($buffer->slice(3)->string, "45678");
+                check($buffer->slice(0)->getString(), $str);
+                check($buffer->slice(1)->getString(), "2345678");
+                check($buffer->slice(2)->getString(), "345678");
+                check($buffer->slice(3)->getString(), "45678");
 
-                check($buffer->slice(0,1)->string, "\xCF\x80");
-                check($buffer->slice(0,1)->length, 1);
-                check($buffer->slice(0,2)->string, "\xCF\x802");
-                check($buffer->slice(0,2)->length, 2);
-                check($buffer->slice(0,3)->string, "\xCF\x8023");
-                check($buffer->slice(0,8)->string, "\xCF\x802345678");
+                check($buffer->slice(0,1)->getString(), "\xCF\x80");
+                check($buffer->slice(0,1)->getLength(), 1);
+                check($buffer->slice(0,2)->getString(), "\xCF\x802");
+                check($buffer->slice(0,2)->getLength(), 2);
+                check($buffer->slice(0,3)->getString(), "\xCF\x8023");
+                check($buffer->slice(0,8)->getString(), "\xCF\x802345678");
 
-                check($buffer->slice(3,6)->string, "456");
-                check($buffer->slice(3,6)->slice(1)->string, "56");
-                check($buffer->slice(3,6)->slice(0)->string, "456");
-                check($buffer->slice(3,6)->slice(1,2)->string, "5");
-                check($buffer->slice(3,6)->slice(1,3)->string, "56");
-                check($buffer->slice(3,6)->slice(1,4)->slice(0,3)->length, 3);
-                check($buffer->slice(3,6)->slice(1,4)->slice(0,3)->string, "567");
+                check($buffer->slice(3,6)->getString(), "456");
+                check($buffer->slice(3,6)->slice(1)->getString(), "56");
+                check($buffer->slice(3,6)->slice(0)->getString(), "456");
+                check($buffer->slice(3,6)->slice(1,2)->getString(), "5");
+                check($buffer->slice(3,6)->slice(1,3)->getString(), "56");
+                check($buffer->slice(3,6)->slice(1,4)->slice(0,3)->getLength(), 3);
+                check($buffer->slice(3,6)->slice(1,4)->slice(0,3)->getString(), "567");
 
                 check($buffer->slice(3,6)->slice(1,3)->charAt(0), "5");
                 check($buffer->slice(3,6)->slice(1,3)->charCodeAt(0), ord("5"));
@@ -2851,7 +2851,7 @@ group(
 
                 $used = memory_get_usage() - $baseline;
 
-                $maximum = $buffer->length * 4 * $num_buffers; // 4 bytes per character
+                $maximum = $buffer->getLength() * 4 * $num_buffers; // 4 bytes per character
 
                 $percent = 100 * ($used / $maximum);
 

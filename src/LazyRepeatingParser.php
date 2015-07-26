@@ -21,18 +21,18 @@ class LazyRepeatingParser extends LimitedRepeatingParser
         while (count($elements) < $this->_min) {
             $result = $this->_delegate->parseOn($current);
 
-            if ($result->isFailure) {
+            if ($result->isFailure()) {
                 return $result;
             }
 
-            $elements[] = $result->value;
+            $elements[] = $result->getValue();
             $current = $result;
         }
 
         while (true) {
             $limit = $this->_limit->parseOn($current);
 
-            if ($limit->isSuccess) {
+            if ($limit->isSuccess()) {
                 return $current->success($elements);
             } else {
                 if ($this->_max != Parser::UNBOUNDED && length($elements) >= $this->_max) {
@@ -41,11 +41,11 @@ class LazyRepeatingParser extends LimitedRepeatingParser
 
                 $result = $this->_delegate->parseOn($current);
 
-                if ($result->isFailure) {
+                if ($result->isFailure()) {
                     break;
                 }
 
-                $elements[] = $result->value;
+                $elements[] = $result->getValue();
 
                 $current = $result;
             }

@@ -33,7 +33,7 @@ class NotParser extends DelegateParser
     {
         $result = $this->_delegate->parseOn($context);
 
-        if ($result->isFailure) {
+        if ($result->isFailure()) {
             return $context->success(null);
         } else {
             return $context->failure($this->_message);

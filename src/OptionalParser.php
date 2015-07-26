@@ -32,7 +32,7 @@ class OptionalParser extends DelegateParser
     {
         $result = $this->_delegate->parseOn($context);
 
-        if ($result->isSuccess) {
+        if ($result->isSuccess()) {
             return $result;
         } else {
             return $context->success($this->_otherwise);

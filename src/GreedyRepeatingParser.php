@@ -17,11 +17,11 @@ class GreedyRepeatingParser extends LimitedRepeatingParser
         while (count($elements) < $this->_min) {
             $result = $this->_delegate->parseOn($current);
 
-            if ($result->isFailure) {
+            if ($result->isFailure()) {
                 return $result;
             }
 
-            $elements[] = $result->value;
+            $elements[] = $result->getValue();
             $current = $result;
         }
 
@@ -31,11 +31,11 @@ class GreedyRepeatingParser extends LimitedRepeatingParser
         while ($this->_max === Parser::UNBOUNDED || count($elements) < $this->_max) {
             $result = $this->_delegate->parseOn($current);
 
-            if ($result->isFailure) {
+            if ($result->isFailure()) {
                 break;
             }
 
-            $elements[] = $result->value;
+            $elements[] = $result->getValue();
             $contexts[] = $result;
             $current = $result;
         }
@@ -45,7 +45,7 @@ class GreedyRepeatingParser extends LimitedRepeatingParser
 
             $limit = $this->_limit->parseOn($last_context);
 
-            if ($limit->isSuccess) {
+            if ($limit->isSuccess()) {
                 return $last_context->success($elements);
             }
 

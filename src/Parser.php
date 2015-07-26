@@ -1,13 +1,12 @@
 <?php
 
 namespace petitparser;
+use OutOfRangeException;
 
 /**
  * Abstract base class of all parsers.
- *
- * @property-read Parser[] $children Returns a list of directly referenced parsers.
  */
-abstract class Parser extends Accessors
+abstract class Parser
 {
     /**
      * @type int unbounded upper limit
@@ -97,7 +96,7 @@ abstract class Parser extends Accessors
      */
     public function accept(Buffer $input)
     {
-        return $this->parse($input)->isSuccess;
+        return $this->parse($input)->isSuccess();
     }
 
     /**
@@ -685,8 +684,8 @@ abstract class Parser extends Accessors
      */
     public function hasEqualChildren(Parser $other, $seen = array())
     {
-        $thisChildren = $this->children;
-        $otherChildren = $other->children;
+        $thisChildren = $this->getChildren();
+        $otherChildren = $other->getChildren();
 
         if (length($thisChildren) !== length($otherChildren)) {
             return false;
@@ -711,13 +710,27 @@ abstract class Parser extends Accessors
      * In contrast, [:letter().or(digit()).children:] returns a collection
      * containing both the [:letter():] and [:digit():] parser.
      *
-     * @see $children
-     *
-     * @return Parser[]
+     * @return Parser[] a list of directly referenced parsers.
      */
-    protected function get_children()
+    public function getChildren()
     {
         return array();
+    }
+
+    /**
+     * @param int $index
+     *
+     * @return Parser the nth directly referenced parser.
+     */
+    public function getChild($index)
+    {
+        $children = $this->getChildren();
+
+        if (!isset($children[$index])) {
+            throw new OutOfRangeException(count($children) ? "valid range is: 0 to " . count($children) - 1 : "Parser has no children");
+        }
+
+        return $children[$index];
     }
 
     /**

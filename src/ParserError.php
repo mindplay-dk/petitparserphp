@@ -43,6 +43,6 @@ class ParserError extends Error
      */
     public function __toString()
     {
-        return "{$this->_failure->message} at {$this->_failure->toPositionString()}";
+        return "{$this->_failure->getMessage()} at {$this->_failure->toPositionString()}";
     }
 }

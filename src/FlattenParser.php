@@ -17,10 +17,10 @@ class FlattenParser extends DelegateParser
     {
         $result = $this->_delegate->parseOn($context);
 
-        if ($result->isSuccess) {
-            $output = $context->buffer->slice($context->position, $result->position);
+        if ($result->isSuccess()) {
+            $output = $context->getBuffer()->slice($context->getPosition(), $result->getPosition());
 
-            return $result->success($output->string);
+            return $result->success($output->getString());
         } else {
             return $result;
         }

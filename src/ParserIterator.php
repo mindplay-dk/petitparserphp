@@ -69,7 +69,7 @@ class ParserIterator implements Iterator
 
         $this->_current = array_pop($this->_todo);
 
-        foreach ($this->_current->children as $parser) {
+        foreach ($this->_current->getChildren() as $parser) {
             if (! in_array($parser, $this->_seen, true)) {
                 $this->_todo[] = $parser;
                 $this->_seen[] = $parser;

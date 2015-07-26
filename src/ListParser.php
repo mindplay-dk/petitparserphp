@@ -25,7 +25,7 @@ abstract class ListParser extends Parser
     /**
      * @see $children
      */
-    protected function get_children()
+    public function getChildren()
     {
         return $this->_parsers;
     }

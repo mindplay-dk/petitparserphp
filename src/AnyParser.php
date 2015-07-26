@@ -24,10 +24,10 @@ class AnyParser extends Parser
      */
     public function parseOn(Context $context)
     {
-        $position = $context->position;
-        $buffer = $context->buffer;
+        $position = $context->getPosition();
+        $buffer = $context->getBuffer();
 
-        return $position < $buffer->length
+        return $position < $buffer->getLength()
             ? $context->success($buffer->charAt($position), $position + 1)
             : $context->failure($this->_message);
     }

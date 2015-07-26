@@ -22,8 +22,8 @@ function length($value)
         return count($value);
     }
 
-    if (is_object($value) && (method_exists($value, 'get_length') || property_exists($value, 'length'))) {
-        return $value->length;
+    if (is_object($value) && (method_exists($value, 'getLength') || property_exists($value, 'length'))) {
+        return $value->getLength();
     }
 
     throw new RuntimeException("unable to obtain length of given value");
@@ -185,7 +185,7 @@ function pattern($element, $message = null)
     }
 
     return new CharacterParser(
-        $patternParser->parse($element)->value,
+        $patternParser->parse($element)->getValue(),
         $message ?: "[{$element}] expected");
 }
 
@@ -389,7 +389,7 @@ function _optimizedString($string)
 
     $buffer = Buffer::create($string);
 
-    for ($offset=0; $offset<$buffer->length; $offset++) {
+    for ($offset=0; $offset<$buffer->getLength(); $offset++) {
         $value = $buffer->charCodeAt($offset);
 
         $ranges[] = new RangeCharacterPredicate($value, $value);
@@ -564,7 +564,7 @@ function transformParser(Parser $parser, Closure $handler)
         /** @var Parser $parent */
         $parent = array_pop($todo);
 
-        foreach ($parent->children as $child) {
+        foreach ($parent->getChildren() as $child) {
             if (isset($mapping[spl_object_hash($child)])) {
                 $parent->replace($child, $mapping[spl_object_hash($child)]);
             } else if (! in_array($child, $seen, true)) {
@@ -590,7 +590,7 @@ function removeSettables(Parser $parser)
         $parser,
         function (Parser $each) {
             while ($each instanceof SettableParser) {
-                $each = $each->children[0];
+                $each = $each->getChild(0);
             }
             return $each;
         }

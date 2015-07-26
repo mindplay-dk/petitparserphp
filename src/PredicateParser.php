@@ -41,11 +41,11 @@ class PredicateParser extends Parser
      */
     public function parseOn(Context $context)
     {
-        $start = $context->position;
+        $start = $context->getPosition();
         $stop = $start + $this->_length;
 
-        if ($stop <= length($context->buffer)) {
-            $result = $context->buffer->slice($start, $stop)->string;
+        if ($stop <= length($context->getBuffer())) {
+            $result = $context->getBuffer()->slice($start, $stop)->getString();
 
             if (call_user_func($this->_predicate, $result)) {
                 return $context->success($result, $stop);

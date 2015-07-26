@@ -4,13 +4,8 @@ namespace petitparser;
 
 /**
  * An immutable parse context.
- *
- * @property-read Buffer $buffer The buffer we are working on.
- * @property-read int $position The current position in the buffer.
- * @property-read bool $isSuccess Returns [true] if this result indicates a parse success.
- * @property-read bool $isFailure Returns [true] if this result indicates a parse failure.
  */
-class Context extends Accessors
+class Context
 {
     /**
      * @var Buffer
@@ -33,19 +28,17 @@ class Context extends Accessors
     }
 
     /**
-     * @see $buffer
-     * @ignore
+     * @return Buffer the buffer we are working on.
      */
-    protected function get_buffer()
+    public function getBuffer()
     {
         return $this->_buffer;
     }
 
     /**
-     * @see $position
-     * @ignore
+     * @return int the current position in the buffer.
      */
-    protected function get_position()
+    public function getPosition()
     {
         return $this->_position;
     }
@@ -89,6 +82,6 @@ class Context extends Accessors
      */
     public function toPositionString()
     {
-        return Token::positionString($this->buffer, $this->position);
+        return Token::positionString($this->getBuffer(), $this->getPosition());
     }
 }

@@ -4,9 +4,6 @@ namespace petitparser;
 
 /**
  * An immutable parse result.
- *
- * @property-read mixed  $value   Returns the parse result of the current context.
- * @property-read string $message Returns the parse message of the current context.
  */
 abstract class Result extends Context
 {
@@ -20,34 +17,28 @@ abstract class Result extends Context
     }
 
     /**
-     * @see $isSuccess
-     * @ignore
+     * @return bool TRUE, if this result indicates a parse success.
      */
-    protected function get_isSuccess()
+    public function isSuccess()
     {
         return false;
     }
 
     /**
-     * @see $isFailure
-     * @ignore
+     * @return bool TRUE, if this result indicates a parse failure.
      */
-    protected function get_isFailure()
+    public function isFailure()
     {
         return false;
     }
 
     /**
-     * @see $value
-     * @return mixed
-     * @ignore
+     * @return mixed the parse result of the current context.
      */
-    abstract protected function get_value();
+    abstract public function getValue();
 
     /**
-     * @see $message
-     * @return string
-     * @ignore
+     * @return string the parse message of the current context.
      */
-    abstract protected function get_message();
+    abstract public function getMessage();
 }

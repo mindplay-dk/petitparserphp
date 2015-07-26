@@ -32,11 +32,11 @@ class CharacterParser extends Parser
      */
     public function parseOn(Context $context)
     {
-        $buffer = $context->buffer;
-        $position = $context->position;
+        $buffer = $context->getBuffer();
+        $position = $context->getPosition();
         $char = $buffer->charAt($position);
 
-        if ($position < $buffer->length && $this->_predicate->test($buffer->charCodeAt($position))) {
+        if ($position < $buffer->getLength() && $this->_predicate->test($buffer->charCodeAt($position))) {
             return $context->success($char, $position + 1);
         }
 

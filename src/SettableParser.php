@@ -11,7 +11,7 @@ class SettableParser extends DelegateParser
      */
     public function set(Parser $parser)
     {
-        $this->replace($this->children[0], $parser);
+        $this->replace($this->getChild(0), $parser);
 
         return $parser;
     }

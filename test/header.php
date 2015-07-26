@@ -187,15 +187,15 @@ function expectSuccess(Parser $parser, $input, $expected, $position = null)
 
     $result = $parser->parse($buffer);
 
-    check($result->isSuccess, true, 'is success');
-    check($result->isFailure, false, 'is not failure');
-    check($result->value, $expected);
+    check($result->isSuccess(), true, 'is success');
+    check($result->isFailure(), false, 'is not failure');
+    check($result->getValue(), $expected);
 
     if ($position === null) {
-        $position = $buffer->length;
+        $position = $buffer->getLength();
     }
 
-    check($result->position, $position, "position is $position");
+    check($result->getPosition(), $position, "position is $position");
 }
 
 /**
@@ -210,12 +210,12 @@ function expectFailure(Parser $parser, $input, $position = 0, $message = null)
 
     $result = $parser->parse($buffer);
 
-    check($result->isFailure, true, "is failure");
-    check($result->isSuccess, false, "is not success");
-    check($result->position, $position, "position is $position");
+    check($result->isFailure(), true, "is failure");
+    check($result->isSuccess(), false, "is not success");
+    check($result->getPosition(), $position, "position is $position");
 
     if ($message !== null) {
-        check($result->message, $message, "message is: " . var_export($message, true));
+        check($result->getMessage(), $message, "message is: " . var_export($message, true));
     }
 }
 

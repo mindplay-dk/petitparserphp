@@ -29,10 +29,9 @@ abstract class LimitedRepeatingParser extends RepeatingParser
     }
 
     /**
-     * @see $children
-     * @ignore
+     * @inheritdoc
      */
-    protected function get_children()
+    public function getChildren()
     {
         return array($this->_delegate, $this->_limit);
     }

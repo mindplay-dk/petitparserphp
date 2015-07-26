@@ -20,11 +20,11 @@ class SequenceParser extends ListParser
         for ($i=0; $i < count($this->_parsers); $i++) {
             $result = $this->_parsers[$i]->parseOn($current);
 
-            if ($result->isFailure) {
+            if ($result->isFailure()) {
                 return $result;
             }
 
-            $elements[$i] = $result->value;
+            $elements[$i] = $result->getValue();
             $current = $result;
         }
 

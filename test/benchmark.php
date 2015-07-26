@@ -169,7 +169,7 @@ $parser = new JsonParser();
 
 foreach ($samples as $sample => $json) {
     $expected = json_decode($json, true);
-    $result = $parser->parse($json)->value;
+    $result = $parser->parse($json)->getValue();
 
     if ($expected !== $result) {
         throw new RuntimeException("unexpected parse result:\n" . print_r($result, true)
@@ -188,7 +188,7 @@ foreach ($samples as $sample => $json) {
     $bench->add(
         "JsonParser: {$sample}",
         function () use ($json, $parser) {
-            $result = $parser->parse($json)->value;
+            $result = $parser->parse($json)->getValue();
         }
     );
 }
