@@ -149,7 +149,7 @@ class Buffer
             return ($l + ($h * 0x010000));
         } else {
             list(, $int) = unpack('N', $bytes);
-            return $int[1];
+            return $int;
         }
     }
 

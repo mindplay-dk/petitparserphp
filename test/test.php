@@ -42,6 +42,46 @@ class PluggableCompositeParser extends CompositeParser
 }
 
 group(
+    'core',
+    function () {
+        test(
+            'toCharCode',
+            function () {
+                check(toCharCode("a"), 97, "converts single byte character");
+
+                $pi = "\xCF\x80"; // UTF-8 greek Pi http://www.fileformat.info/info/unicode/char/03c0/index.htm
+
+                check(toCharCode($pi), 0x3c0, "converts multi-byte character");
+            }
+        );
+
+        test(
+            'fromCharCode',
+            function () {
+                check(fromCharCode(97), "a", "converts single byte character");
+
+                $pi = "\xCF\x80"; // UTF-8 greek Pi http://www.fileformat.info/info/unicode/char/03c0/index.htm
+
+                check(fromCharCode(0x3c0), $pi, "converts multi-byte character");
+            }
+        );
+
+        test(
+            'Buffer::charCodeAt()',
+            function () {
+                $pi = "\xCF\x80"; // UTF-8 greek Pi http://www.fileformat.info/info/unicode/char/03c0/index.htm
+
+                $buffer = Buffer::create("a" . $pi);
+
+                check($buffer->charCodeAt(0), 97, "obtain single byte character");
+
+                check($buffer->charCodeAt(1), 0x3c0, "obtain multi-byte character");
+            }
+        );
+    }
+);
+
+group(
     'parsers',
     function () {
         test(
